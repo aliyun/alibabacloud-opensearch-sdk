@@ -1,0 +1,16 @@
+node_modules
+lib
+types
+dist
+.DS_Store
+coverage.out
+coverage.html
+
+.idea/
+target/
+*.iml
+.classpath
+.project
+.settings/
+*.js
+yarn.lock
