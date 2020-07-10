@@ -1,0 +1,21 @@
+{
+	"scope": "alibabacloud",
+	"name": "OpenSearchUtil",
+	"version": "0.0.6",
+	"main": "./main.tea",
+	"releases": {
+		"go": "github.com/alibabacloud-go/opensearchutil/service:v1.0.0",
+		"csharp": "AlibabaCloud.OpenSearchUtil:0.0.1",
+		"ts": "@alicloud/opensearch-util:^1.0.0",
+		"java": "com.aliyun:opensearch-util:0.0.2"
+	},
+	"csharp": {
+		"namespace": "AlibabaCloud.OpenSearchUtil"
+	},
+	"java": {
+		"package": "com.aliyun.opensearchutil"
+	},
+	"php": {
+		"package": "AlibabaCloud.Tea.opensearchutil"
+	}
+}
