@@ -16,7 +16,7 @@
   },
   "releases": {
     "java": "com.aliyun:opensearch:0.0.1",
-    "go": "github.com/alibabacloud-go/OpenSearch/client:v1.0.0",
+    "go": "github.com/alibabacloud-go/opensearch/client:v1.0.0",
     "csharp": "AlibabaCloud.SDK.OpenSearch:0.0.1",
     "ts": "@alicloud/opensearch:^1.0.0",
     "php": "alibabacloud/opensearch:^0.1.0"
