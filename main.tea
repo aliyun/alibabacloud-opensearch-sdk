@@ -1,0 +1,378 @@
+/**
+ *
+ */
+
+import Util;
+import OpenSearchUtil;
+import Credential;
+
+type @endpoint = string
+type @protocol = string
+type @userAgent = string
+type @credential = Credential
+
+model Config {
+  endpoint?: string,
+  protocol?: string,
+  type?: string,
+  securityToken?: string,
+  accessKeyId?: string,
+  accessKeySecret?: string,
+  userAgent?: string
+}
+
+init(config: Config){
+  if (Util.isUnset(config)) {
+    throw {
+      name = 'ParameterMissing',
+      message = '\'config\' can not be unset'
+    };
+  }
+
+  if (Util.empty(config.type)) {
+    config.type = 'access_key';
+  }
+  var credentialConfig = new Credential.Config{
+    accessKeyId = config.accessKeyId,
+    type = config.type,
+    accessKeySecret = config.accessKeySecret,
+    securityToken = config.securityToken,
+  };
+  @credential = new Credential(credentialConfig);
+  @endpoint = config.endpoint;
+  @protocol = config.protocol;
+  @userAgent = config.userAgent;
+}
+
+model SearchQuery {
+  query: string(name='query', description='搜索主体，不能为空。主要支持子句有 config子句、query子句、sort子句、filter子句、aggregate子句、distinct子句 、kvpairs子句。'),
+  fetchFields?: string(name='fetch_fields', description='表示本次查询需要召回哪些字段值，多个字段之间通过英文分号;分隔，对应控制台中的默认展示字段功能。默认使用全部可展示字段。'),
+  qp?: string(name='qp', description='指定要使用的查询分析规则，多个规则使用英文逗号,分隔。默认使用已上线规则'),
+  disable?: string(name='disable', description='关闭指定已生效的参数功能。'),
+  firstRankName?: string(name='first_rank_name', description='设置粗排表达式名字。'),
+  secondRankName?: string(name='second_rank_name', description='设置精排表达式名字。'),
+  userId?: string(name='user_id', description='用来标识发起当前搜索请求的终端用户。该值可以设置为下列值，优先级从高到低：1. 终端用户的长登录会员ID；2. 终端用户的移动设备imei标识；3. 终端用户的client_ip'),
+  abtest?: string(name='abtest', description='使用A/B Test功能时需要设置该参数。'),
+  categoryPrediction?: string(name='category_prediction', description='通过类目预测功能搜索时需要设置该参数。'),
+  rawQuery?: string(name='raw_query', description='终端用户输入的query，用于类目预测相关模型训练。'),
+  summary?: string(name='summary', description='搜索结果摘要配置，可以指定某些字段进行飘红、截断等操作。'),
+}
+
+model SearchRequestModel {
+  headers?: map[string]string(description='headers', name='headers'),
+  query: SearchQuery(description='query', name='query')
+}
+
+model SearchResponseModel {
+  headers?: map[string]string(description='headers', name='headers'),
+  body: SearchResponse(description='body', name='body')
+}
+
+/**
+ * 系统提供了丰富的搜索语法以满足用户各种场景下的搜索需求。
+ */
+async function searchEx(appName: string, request: SearchRequestModel, runtime: Util.RuntimeOptions): SearchResponseModel {
+  return _request('GET', `/v3/openapi/apps/${appName}/search`, request.query, request.headers, null, runtime);
+}
+
+/**
+ * 系统提供了丰富的搜索语法以满足用户各种场景下的搜索需求。
+ */
+async function search(appName: string, request: SearchRequestModel): SearchResponseModel {
+  var runtime = new Util.RuntimeOptions{
+    connectTimeout = 5000,
+    readTimeout = 10000,
+    autoretry = false,
+    ignoreSSL = false,
+    maxIdleConns = 50,
+  };
+  return searchEx(appName, request, runtime);
+}
+
+model SuggestQuery {
+  query: string(name='query', description='搜索关键词（包含中文需进行urlencode编码）'),
+  hit?: integer(name='hit', description='下拉提示条数', minimum=1, maximum=10, default=10),
+}
+
+model SuggestRequestModel {
+  headers?: map[string]string(description='headers', name='headers'),
+  query: SuggestQuery(description='query', name='query')
+}
+
+model SuggestResponseModel {
+  headers?: map[string]string(description='headers', name='headers'),
+  body: SuggestionResponse(description='body', name='body')
+}
+
+/**
+ * 下拉提示是搜索服务的基础功能，在用户输入查询词的过程中，智能推荐候选query，减少用户输入，帮助用户尽快找到想要的内容。
+ */
+async function suggestEx(appName: string, modelName: string, request: SuggestRequestModel, runtime: Util.RuntimeOptions): SuggestResponseModel {
+  return _request('GET', `/v3/openapi/apps/${appName}/suggest/${modelName}/search`, request.query, request.headers, null, runtime);
+}
+
+/**
+ * 下拉提示是搜索服务的基础功能，在用户输入查询词的过程中，智能推荐候选query，减少用户输入，帮助用户尽快找到想要的内容。
+ */
+async function suggest(appName: string, modelName: string, request: SuggestRequestModel): SuggestResponseModel {
+  var runtime = new Util.RuntimeOptions{
+    connectTimeout = 5000,
+    readTimeout = 10000,
+    autoretry = false,
+    ignoreSSL = false,
+    maxIdleConns = 50,
+  };
+  return suggestEx(appName, modelName, request, runtime);
+}
+
+model PushDocumentRequestModel {
+  headers?: map[string]string(description='headers', name='headers'),
+  body: [ Document ](description='body', name='body')
+}
+
+model PushDocumentResponseModel {
+  headers?: map[string]string(description='headers', name='headers'),
+  body: Response(description='body', name='body')
+}
+
+/**
+ * 支持新增、更新、删除 等操作，以及对应批量操作
+ */
+async function pushDocumentEx(appName: string, tableName: string, request: PushDocumentRequestModel, runtime: Util.RuntimeOptions): PushDocumentResponseModel {
+  return _request('POST', `/v3/openapi/apps/${appName}/${tableName}/actions/bulk`, null, request.headers, request.body, runtime);
+}
+
+/**
+ * 支持新增、更新、删除 等操作，以及对应批量操作
+ */
+async function pushDocument(appName: string, tableName: string, request: PushDocumentRequestModel): PushDocumentResponseModel {
+  var runtime = new Util.RuntimeOptions{
+    connectTimeout = 5000,
+    readTimeout = 10000,
+    autoretry = false,
+    ignoreSSL = false,
+    maxIdleConns = 50,
+  };
+  return pushDocumentEx(appName, tableName, request, runtime);
+}
+
+model CollectDataRequestModel {
+  headers?: map[string]string(description='headers', name='headers'),
+  body: [ Behavior ](description='body', name='body')
+}
+
+model CollectDataResponseModel {
+  headers?: map[string]string(description='headers', name='headers'),
+  body: Response(description='body', name='body')
+}
+
+/**
+ * 为了给客户提供更高质量的搜索效果，opensearch目前支持客户通过server端上传点击数据。
+ */
+async function collectDataEx(appName: string, collectorName: string, request: CollectDataRequestModel, runtime: Util.RuntimeOptions): CollectDataResponseModel {
+  return _request('POST', `/v3/openapi/app-groups/${appName}/data-collections/${collectorName}/actions/bulk`, null, request.headers, request.body, runtime);
+}
+
+/**
+ * 为了给客户提供更高质量的搜索效果，opensearch目前支持客户通过server端上传点击数据。
+ */
+async function collectData(appName: string, collectorName: string, request: CollectDataRequestModel): CollectDataResponseModel {
+  var runtime = new Util.RuntimeOptions{
+    connectTimeout = 5000,
+    readTimeout = 10000,
+    autoretry = false,
+    ignoreSSL = false,
+    maxIdleConns = 50,
+  };
+  return collectDataEx(appName, collectorName, request, runtime);
+}
+
+/**
+ * 
+ */
+model SearchResponse {
+  status?: string(name='status'),
+  requestId?: string(name='request_id'),
+  result?: SearchResult(name='result'),
+  errors?: [ Error ](name='errors'),
+}
+
+/**
+ * 实际返回结果，包括查询耗时searchtime、引擎总结果数total、本次请求返回结果数num、本次查询最大返回结果数viewtotal、查询结果items、统计结果facet等信息
+ */
+model SearchResult {
+  searchtime?: double(name='searchtime', description='指引擎耗时，单位为秒。'),
+  total?: integer(name='total', description='total为一次查询（不考虑config子句）引擎中符合条件的结果数（在结果数较多情况下，该值会做优化），一般用来做展示。'),
+  viewtotal?: integer(name='viewtotal', description='考虑到性能及相关性，引擎最多会返回viewtotal个结果。如果需要翻页的话，要求start+hit必需要小于viewtotal'),
+  num?: integer(name='num', description='num为本次查询请求（受限于config子句的start及hit）实际返回的条目，不会超过hit值。'),
+  items?: [ object ](name='items', description='包含查询召回数据信息，其中fields为搜索召回内容。'),
+  facet?: [ SearchResultFacet ](name='facet', description='用于存放Aggregate子句返回的信息。'),
+}
+
+/**
+ * 
+ */
+model SearchResultItemFullJson {
+  fields?: map[string]any(name='fields', description='搜索召回内容'),
+  variableValue?: map[string]any(name='variableValue', description='表示自定义参数返回结果，如获取distance距离值，variableValue 节点只有在config子句的format为xml或者fulljson时才能展现出来，json格式默认不展示。'),
+  sortExprValues?: [ number ](name='sortExprValues', description='表示对应文档排序分。'),
+}
+
+/**
+ * 
+ */
+model SearchResultFacet {
+  key?: string(name='key'),
+  items?: [
+    {
+      value?: string(name='value'),
+      count?: integer(name='count'),
+    }
+  ](name='items'),
+}
+
+/**
+ * 
+ */
+model Error {
+  code?: integer(name='code', description='错误代码'),
+  message?: string(name='message', description='错误描述'),
+}
+
+/**
+ * 
+ */
+model Document {
+  cmd: string(name='cmd', description='必选字段。定义该文档的操作行为，可以为“add”、“update”、“delete”，标准版不支持“update”。建议一个请求中进行批量更新操作，提高网络交互及处理效率。“add”表示新增文档，如果该主键对应文档已经存在，则执行先“delete”再“add”的操作；“update”表示更新文档，对该主键对应文档进行部分字段更新；“delete”表示删除文档，如果该主键对应文档已经不存在，则认为删除成功。', enum='add, update, delete'),
+  timestamp?: integer(name='timestamp', description='可选字段。用来记录文档实际发生时间，单位为毫秒。系统会用该时间戳来作为同一主键文档更新顺序的判断标准，该选项仅支持高级版，标准版应用，没有该timestamp选项，若指定该选项，推送会报4007错误码。在没有该timestamp项时，默认以文档发送到OpenSearch的时间作为文档更新时间进行操作。'),
+  fields: map[string]any(name='fields', description='必选字段。要操作的文档内容，主键字段必选，系统所有操作都是通过主键来进行的。对于“delete”只需要提供文档主键即可。'),
+}
+
+/**
+ * 
+ */
+model Behavior {
+  cmd: string(name='cmd', description='必选字段。定义该文档的操作行为，目前仅支持ADD', enum='ADD'),
+  fields: map[string]any(name='fields', description='必选字段。行为数据主体。'),
+}
+
+/**
+ * object_id=pk,object_type=ops_search_doc,ops_request_misc=xxx
+ */
+model Event2001Args {
+  objectId?: string(name='object_id', description='被点击的对象的主键，不能为空，如果通过api上传需要urlencode'),
+  objectType?: string(name='object_type', description='必须为ops_search_doc', default='ops_search_doc'),
+  opsRequestMisc?: string(name='ops_request_misc', description='开放搜索在搜索结果中返回的参数，只要原样设置即可。'),
+}
+
+/**
+ * 
+ */
+model SuggestionResponse {
+  requestId?: string(name='request_id'),
+  searchtime?: double(name='searchtime', description='引擎查询耗时，单位为秒'),
+  suggestions?: [
+    {
+      suggestion?: string(name='suggestion'),
+    }
+  ](name='suggestions'),
+  errors?: [ Error ](name='errors'),
+}
+
+/**
+ * 
+ */
+model Response {
+  status?: string(name='status'),
+  requestId?: string(name='request_id'),
+  errors?: [ Error ](name='errors'),
+}
+
+api _request(method: string, pathname: string, query: map[string]any, headers: map[string]string, body: any, runtime: Util.RuntimeOptions): map[string]any {
+  var accesskeyId = getAccessKeyId();
+  var accessKeySecret = getAccessKeySecret();
+  __request.protocol = Util.defaultString(@protocol, 'HTTP');
+  __request.method = method;
+  __request.pathname = pathname;
+  __request.headers = {
+    user-agent = getUserAgent(),
+    Date = OpenSearchUtil.getDate(),
+    host = Util.defaultString(@endpoint, `opensearch-cn-hangzhou.aliyuncs.com`),
+    X-Opensearch-Nonce = Util.getNonce(),
+    ...headers
+  };
+
+  if (!Util.isUnset(query)) {
+    __request.query = Util.stringifyMapValue(query);
+  }
+
+  if (!Util.isUnset(body)) {
+    var reqBody = Util.toJSONString(body);
+    __request.headers.Content-MD5 = OpenSearchUtil.getContentMD5(reqBody);
+    __request.headers.Content-Type = 'application/json';
+    __request.body = reqBody;
+  }
+  __request.headers.Authorization = OpenSearchUtil.getSignature(__request, accesskeyId, accessKeySecret);
+} returns {
+  var objStr = Util.readAsString(__response.body);
+
+  if (Util.is4xx(__response.statusCode) || Util.is5xx(__response.statusCode)) {
+    throw {
+      message = __response.statusMessage,
+      data = objStr,
+      code = __response.statusCode
+    };
+  }
+  var obj = Util.parseJSON(objStr);
+  var res = Util.assertAsMap(obj);
+  return {
+    body = res,
+    headers = __response.headers
+  };
+} runtime {
+  timeouted = 'retry',
+  readTimeout = runtime.readTimeout,
+  connectTimeout = runtime.connectTimeout,
+  httpProxy = runtime.httpProxy,
+  httpsProxy = runtime.httpsProxy,
+  noProxy = runtime.noProxy,
+  maxIdleConns = runtime.maxIdleConns,
+  retry = {
+    retryable = runtime.autoretry,
+    maxAttempts = Util.defaultNumber(runtime.maxAttempts, 3)
+  },
+  backoff = {
+    policy = Util.defaultString(runtime.backoffPolicy, 'no'),
+    period = Util.defaultNumber(runtime.backoffPeriod, 1)
+  },
+  ignoreSSL = runtime.ignoreSSL
+}
+
+function setUserAgent(userAgent: string): void {
+  @userAgent = userAgent;
+}
+
+function appendUserAgent(userAgent: string): void {
+  @userAgent = `${@userAgent} ${userAgent}`;
+}
+
+function getUserAgent(): string {
+  var userAgent = Util.getUserAgent(@userAgent);
+  return userAgent;
+}
+
+async function getAccessKeyId(): string {
+  if (Util.isUnset(@credential)) {
+    return '';
+  }
+  var accessKeyId = @credential.getAccessKeyId();
+  return accessKeyId;
+}
+
+async function getAccessKeySecret(): string {
+  if (Util.isUnset(@credential)) {
+    return '';
+  }
+  var secret = @credential.getAccessKeySecret();
+  return secret;
+}
