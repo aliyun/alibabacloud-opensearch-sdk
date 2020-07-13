@@ -1,4 +1,4 @@
-module github.com/alibabacloud-go/opensearchutil
+module github.com/alibabacloud-go/opensearch-util
 
 go 1.14
 
