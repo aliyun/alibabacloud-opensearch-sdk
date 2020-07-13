@@ -7,7 +7,8 @@
 		"go": "github.com/alibabacloud-go/opensearch-util/service:v1.0.0",
 		"csharp": "AlibabaCloud.OpenSearchUtil:0.0.1",
 		"ts": "@alicloud/opensearch-util:^1.0.0",
-		"java": "com.aliyun:opensearch-util:0.0.2"
+		"java": "com.aliyun:opensearch-util:0.0.2",
+		"php": "alibabacloud/opensearch-util:^0.1"
 	},
 	"csharp": {
 		"namespace": "AlibabaCloud.OpenSearchUtil"
@@ -16,6 +17,12 @@
 		"package": "com.aliyun.opensearchutil"
 	},
 	"php": {
-		"package": "AlibabaCloud.Tea.opensearchutil"
+		"package": "AlibabaCloud.Tea.OpenSearchUtil",
+		"withTest": 1,
+		"packageInfo": {
+			"name": "alibabacloud/opensearch-util",
+			"desc": "Alibaba Cloud OpenSearch Util Library for PHP",
+			"github": "https://github.com/aliyun/alibabacloud-opensearch-sdk"
+		}
 	}
 }
