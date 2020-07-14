@@ -22,10 +22,10 @@ static function keys(m: map[string]any): [ string ];
  * Join array elements with a spearator string.
  * @example join(["a", "b"], ".") => "a.b"
  * @param strings the string list
- * @param spearator the spearator
+ * @param separator the separator
  * @return the joined string
  */
-static function join(strings: [ string ], spearator: string): string;
+static function join(strings: [ string ], separator: string): string;
 
 /**
  * Get date.
@@ -56,4 +56,4 @@ static function getContentMD5(content: string): string;
  * @param sep the spearator
  * @return the spliced string
  */
-static function mapToString(origin: map[stirng]string, sep: string): string;
+static function mapToString(origin: map[string]string, sep: string): string;
