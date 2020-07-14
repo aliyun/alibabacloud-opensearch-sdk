@@ -36,7 +36,9 @@ static function getDate(): string;
 
 /**
  * Get signature with request, accesskeyId, accessKeySecret.
- * @param origin the source map
+ * @param request the object of tea request
+ * @param accessKeyId accesskey id
+ * @param accessKeySecret accesskey secret
  * @return signature string
  */
 static function getSignature(request: $Request, accessKeyId: string, accessKeySecret: string): string;
