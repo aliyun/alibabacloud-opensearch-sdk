@@ -12,7 +12,8 @@
   "libraries": {
     "Util": "alibabacloud:Util:*",
     "Credential": "alibabacloud:Credential:*",
-    "OpenSearchUtil": "alibabacloud:OpenSearchUtil:*"
+    "OpenSearchUtil": "alibabacloud:OpenSearchUtil:*",
+    "SearchRequestModelBuilder": "alibabacloud:SearchRequestModelBuilder:*"
   },
   "releases": {
     "java": "com.aliyun:opensearch:0.0.1",
