@@ -10,7 +10,7 @@
     }
   ],
   "libraries": {
-    "Util": "alibabacloud:Util:*",
+    "Util": "darabonba:Util:*",
     "Credential": "alibabacloud:Credential:*",
     "OpenSearchUtil": "alibabacloud:OpenSearchUtil:*"
   },
