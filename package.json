@@ -1,6 +1,6 @@
 {
   "name": "opensearch-sdk",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "lib/index.js",
   "files": [
@@ -8,13 +8,16 @@
     "types"
   ],
   "types": "types",
+  "bugs": {
+    "url": "https://github.com/imbooo/alibabacloud-opensearch-sdk/issues"
+  },
+  "homepage": "https://github.com/imbooo/alibabacloud-opensearch-sdk",
   "scripts": {
     "test": "mocha -r ts-node/register test/**/*.spec.ts",
     "test-cov": "nyc -e .ts -r=html -r=text -r=lcov npm run test",
     "build": "tsc",
     "prepublishOnly": "tsc"
   },
-  "author": "page",
   "license": "ISC",
   "devDependencies": {
     "@types/mocha": "^7.0.2",

@@ -32,6 +32,7 @@ function getSignature(request: $tea.Request, accessKeySecret: string): string {
   let resource = request.pathname;
   const params = Object
     .entries<string>(request.query)
+    .sort()
     .filter(([, value]) => typeof value !== "undefined" && value !== null)
     .map(([key, value]) => {
       let valueStr = encodeURIComponent(value);
