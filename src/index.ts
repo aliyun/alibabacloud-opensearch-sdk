@@ -2,629 +2,27 @@ import Credential, * as $Credential from "@alicloud/credentials";
 import OpenSearchUtil from "./util";
 import * as $tea from "@alicloud/tea-typescript";
 import Util, * as $Util from "@alicloud/tea-util";
-
-export class Config extends $tea.Model {
-  endpoint?: string;
-  protocol?: string;
-  type?: string;
-  securityToken?: string;
-  accessKeyId?: string;
-  accessKeySecret?: string;
-  userAgent?: string;
-
-  static names(): { [key: string]: string } {
-    return {
-      endpoint: "endpoint",
-      protocol: "protocol",
-      type: "type",
-      securityToken: "securityToken",
-      accessKeyId: "accessKeyId",
-      accessKeySecret: "accessKeySecret",
-      userAgent: "userAgent"
-    };
-  }
-
-  static types(): { [key: string]: any } {
-    return {
-      endpoint: "string",
-      protocol: "string",
-      type: "string",
-      securityToken: "string",
-      accessKeyId: "string",
-      accessKeySecret: "string",
-      userAgent: "string"
-    };
-  }
-
-  constructor(map?: { [key: string]: any }) {
-    super(map);
-  }
-}
-
-export class SearchQuery extends $tea.Model {
-  query: string;
-  fetchFields?: string;
-  qp?: string;
-  disable?: string;
-  firstRankName?: string;
-  secondRankName?: string;
-  userId?: string;
-  abtest?: string;
-  categoryPrediction?: string;
-  rawQuery?: string;
-  summary?: string;
-
-  static names(): { [key: string]: string } {
-    return {
-      query: "query",
-      fetchFields: "fetch_fields",
-      qp: "qp",
-      disable: "disable",
-      firstRankName: "first_rank_name",
-      secondRankName: "second_rank_name",
-      userId: "user_id",
-      abtest: "abtest",
-      categoryPrediction: "category_prediction",
-      rawQuery: "raw_query",
-      summary: "summary"
-    };
-  }
-
-  static types(): { [key: string]: any } {
-    return {
-      query: "string",
-      fetchFields: "string",
-      qp: "string",
-      disable: "string",
-      firstRankName: "string",
-      secondRankName: "string",
-      userId: "string",
-      abtest: "string",
-      categoryPrediction: "string",
-      rawQuery: "string",
-      summary: "string"
-    };
-  }
-
-  constructor(map?: { [key: string]: any }) {
-    super(map);
-  }
-}
-
-export class SearchRequestModel extends $tea.Model {
-  headers?: { [key: string]: string };
-  query: SearchQuery;
-
-  static names(): { [key: string]: string } {
-    return {
-      headers: "headers",
-      query: "query"
-    };
-  }
-
-  static types(): { [key: string]: any } {
-    return {
-      headers: { "type": "map", "keyType": "string", "valueType": "string" },
-      query: SearchQuery
-    };
-  }
-
-  constructor(map?: { [key: string]: any }) {
-    super(map);
-  }
-}
-
-export class SearchResponseModel extends $tea.Model {
-  headers?: { [key: string]: string };
-  body: SearchResponse;
-
-  static names(): { [key: string]: string } {
-    return {
-      headers: "headers",
-      body: "body"
-    };
-  }
-
-  static types(): { [key: string]: any } {
-    return {
-      headers: { "type": "map", "keyType": "string", "valueType": "string" },
-      body: SearchResponse
-    };
-  }
-
-  constructor(map?: { [key: string]: any }) {
-    super(map);
-  }
-}
-
-export class SuggestQuery extends $tea.Model {
-  query: string;
-  hit?: number;
-
-  static names(): { [key: string]: string } {
-    return {
-      query: "query",
-      hit: "hit"
-    };
-  }
-
-  static types(): { [key: string]: any } {
-    return {
-      query: "string",
-      hit: "number"
-    };
-  }
-
-  constructor(map?: { [key: string]: any }) {
-    super(map);
-  }
-}
-
-export class SuggestRequestModel extends $tea.Model {
-  headers?: { [key: string]: string };
-  query: SuggestQuery;
-
-  static names(): { [key: string]: string } {
-    return {
-      headers: "headers",
-      query: "query"
-    };
-  }
-
-  static types(): { [key: string]: any } {
-    return {
-      headers: { "type": "map", "keyType": "string", "valueType": "string" },
-      query: SuggestQuery
-    };
-  }
-
-  constructor(map?: { [key: string]: any }) {
-    super(map);
-  }
-}
-
-export class SuggestResponseModel extends $tea.Model {
-  headers?: { [key: string]: string };
-  body: SuggestionResponse;
-
-  static names(): { [key: string]: string } {
-    return {
-      headers: "headers",
-      body: "body"
-    };
-  }
-
-  static types(): { [key: string]: any } {
-    return {
-      headers: { "type": "map", "keyType": "string", "valueType": "string" },
-      body: SuggestionResponse
-    };
-  }
-
-  constructor(map?: { [key: string]: any }) {
-    super(map);
-  }
-}
-
-export class PushDocumentRequestModel extends $tea.Model {
-  headers?: { [key: string]: string };
-  body: Document[];
-
-  static names(): { [key: string]: string } {
-    return {
-      headers: "headers",
-      body: "body"
-    };
-  }
-
-  static types(): { [key: string]: any } {
-    return {
-      headers: { "type": "map", "keyType": "string", "valueType": "string" },
-      body: { "type": "array", "itemType": Document }
-    };
-  }
-
-  constructor(map?: { [key: string]: any }) {
-    super(map);
-  }
-}
-
-export class PushDocumentResponseModel extends $tea.Model {
-  headers?: { [key: string]: string };
-  body: Response;
-
-  static names(): { [key: string]: string } {
-    return {
-      headers: "headers",
-      body: "body"
-    };
-  }
-
-  static types(): { [key: string]: any } {
-    return {
-      headers: { "type": "map", "keyType": "string", "valueType": "string" },
-      body: Response
-    };
-  }
-
-  constructor(map?: { [key: string]: any }) {
-    super(map);
-  }
-}
-
-export class CollectDataRequestModel extends $tea.Model {
-  headers?: { [key: string]: string };
-  body: Behavior[];
-
-  static names(): { [key: string]: string } {
-    return {
-      headers: "headers",
-      body: "body"
-    };
-  }
-
-  static types(): { [key: string]: any } {
-    return {
-      headers: { "type": "map", "keyType": "string", "valueType": "string" },
-      body: { "type": "array", "itemType": Behavior }
-    };
-  }
-
-  constructor(map?: { [key: string]: any }) {
-    super(map);
-  }
-}
-
-export class CollectDataResponseModel extends $tea.Model {
-  headers?: { [key: string]: string };
-  body: Response;
-
-  static names(): { [key: string]: string } {
-    return {
-      headers: "headers",
-      body: "body"
-    };
-  }
-
-  static types(): { [key: string]: any } {
-    return {
-      headers: { "type": "map", "keyType": "string", "valueType": "string" },
-      body: Response
-    };
-  }
-
-  constructor(map?: { [key: string]: any }) {
-    super(map);
-  }
-}
-
-export class SearchResponse extends $tea.Model {
-  status?: string;
-  requestId?: string;
-  result?: SearchResult;
-  errors?: Error[];
-
-  static names(): { [key: string]: string } {
-    return {
-      status: "status",
-      requestId: "request_id",
-      result: "result",
-      errors: "errors"
-    };
-  }
-
-  static types(): { [key: string]: any } {
-    return {
-      status: "string",
-      requestId: "string",
-      result: SearchResult,
-      errors: { "type": "array", "itemType": Error }
-    };
-  }
-
-  constructor(map?: { [key: string]: any }) {
-    super(map);
-  }
-}
-
-/**
- * 实际返回结果，包括查询耗时searchtime、引擎总结果数total、本次请求返回结果数num、本次查询最大返回结果数viewtotal、查询结果items、统计结果facet等信息
- */
-export class SearchResult extends $tea.Model {
-  searchtime?: number;
-  total?: number;
-  viewtotal?: number;
-  num?: number;
-  items?: { [key: string]: any }[];
-  facet?: SearchResultFacet[];
-
-  static names(): { [key: string]: string } {
-    return {
-      searchtime: "searchtime",
-      total: "total",
-      viewtotal: "viewtotal",
-      num: "num",
-      items: "items",
-      facet: "facet"
-    };
-  }
-
-  static types(): { [key: string]: any } {
-    return {
-      searchtime: "number",
-      total: "number",
-      viewtotal: "number",
-      num: "number",
-      items: { "type": "array", "itemType": "object" },
-      facet: { "type": "array", "itemType": SearchResultFacet }
-    };
-  }
-
-  constructor(map?: { [key: string]: any }) {
-    super(map);
-  }
-}
-
-export class SearchResultItemFullJson extends $tea.Model {
-  fields?: { [key: string]: any };
-  variableValue?: { [key: string]: any };
-  sortExprValues?: number[];
-
-  static names(): { [key: string]: string } {
-    return {
-      fields: "fields",
-      variableValue: "variableValue",
-      sortExprValues: "sortExprValues"
-    };
-  }
-
-  static types(): { [key: string]: any } {
-    return {
-      fields: { "type": "map", "keyType": "string", "valueType": "any" },
-      variableValue: { "type": "map", "keyType": "string", "valueType": "any" },
-      sortExprValues: { "type": "array", "itemType": "number" }
-    };
-  }
-
-  constructor(map?: { [key: string]: any }) {
-    super(map);
-  }
-}
-
-export class SearchResultFacet extends $tea.Model {
-  key?: string;
-  items?: SearchResultFacetItems[];
-
-  static names(): { [key: string]: string } {
-    return {
-      key: "key",
-      items: "items"
-    };
-  }
-
-  static types(): { [key: string]: any } {
-    return {
-      key: "string",
-      items: { "type": "array", "itemType": SearchResultFacetItems }
-    };
-  }
-
-  constructor(map?: { [key: string]: any }) {
-    super(map);
-  }
-}
-
-export class Error extends $tea.Model {
-  code?: number;
-  message?: string;
-
-  static names(): { [key: string]: string } {
-    return {
-      code: "code",
-      message: "message"
-    };
-  }
-
-  static types(): { [key: string]: any } {
-    return {
-      code: "number",
-      message: "string"
-    };
-  }
-
-  constructor(map?: { [key: string]: any }) {
-    super(map);
-  }
-}
-
-/**
- *
- */
-export class Document extends $tea.Model {
-  cmd: string;
-  timestamp?: number;
-  fields: { [key: string]: any };
-
-  static names(): { [key: string]: string } {
-    return {
-      cmd: "cmd",
-      timestamp: "timestamp",
-      fields: "fields"
-    };
-  }
-
-  static types(): { [key: string]: any } {
-    return {
-      cmd: "string",
-      timestamp: "number",
-      fields: { "type": "map", "keyType": "string", "valueType": "any" }
-    };
-  }
-
-  constructor(map?: { [key: string]: any }) {
-    super(map);
-  }
-}
-
-/**
- *
- */
-export class Behavior extends $tea.Model {
-  cmd: string;
-  fields: { [key: string]: any };
-
-  static names(): { [key: string]: string } {
-    return {
-      cmd: "cmd",
-      fields: "fields"
-    };
-  }
-
-  static types(): { [key: string]: any } {
-    return {
-      cmd: "string",
-      fields: { "type": "map", "keyType": "string", "valueType": "any" }
-    };
-  }
-
-  constructor(map?: { [key: string]: any }) {
-    super(map);
-  }
-}
-
-/**
- * object_id=pk,object_type=ops_search_doc,ops_request_misc=xxx
- */
-export class Event2001Args extends $tea.Model {
-  objectId?: string;
-  objectType?: string;
-  opsRequestMisc?: string;
-
-  static names(): { [key: string]: string } {
-    return {
-      objectId: "object_id",
-      objectType: "object_type",
-      opsRequestMisc: "ops_request_misc"
-    };
-  }
-
-  static types(): { [key: string]: any } {
-    return {
-      objectId: "string",
-      objectType: "string",
-      opsRequestMisc: "string"
-    };
-  }
-
-  constructor(map?: { [key: string]: any }) {
-    super(map);
-  }
-}
-
-export class SuggestionResponse extends $tea.Model {
-  requestId?: string;
-  searchtime?: number;
-  suggestions?: SuggestionResponseSuggestions[];
-  errors?: Error[];
-
-  static names(): { [key: string]: string } {
-    return {
-      requestId: "request_id",
-      searchtime: "searchtime",
-      suggestions: "suggestions",
-      errors: "errors"
-    };
-  }
-
-  static types(): { [key: string]: any } {
-    return {
-      requestId: "string",
-      searchtime: "number",
-      suggestions: { "type": "array", "itemType": SuggestionResponseSuggestions },
-      errors: { "type": "array", "itemType": Error }
-    };
-  }
-
-  constructor(map?: { [key: string]: any }) {
-    super(map);
-  }
-}
-
-export class Response extends $tea.Model {
-  status?: string;
-  requestId?: string;
-  errors?: Error[];
-
-  static names(): { [key: string]: string } {
-    return {
-      status: "status",
-      requestId: "request_id",
-      errors: "errors"
-    };
-  }
-
-  static types(): { [key: string]: any } {
-    return {
-      status: "string",
-      requestId: "string",
-      errors: { "type": "array", "itemType": Error }
-    };
-  }
-
-  constructor(map?: { [key: string]: any }) {
-    super(map);
-  }
-}
-
-export class SearchResultFacetItems extends $tea.Model {
-  value?: string;
-  count?: number;
-
-  static names(): { [key: string]: string } {
-    return {
-      value: "value",
-      count: "count"
-    };
-  }
-
-  static types(): { [key: string]: any } {
-    return {
-      value: "string",
-      count: "number"
-    };
-  }
-
-  constructor(map?: { [key: string]: any }) {
-    super(map);
-  }
-}
-
-export class SuggestionResponseSuggestions extends $tea.Model {
-  suggestion?: string;
-
-  static names(): { [key: string]: string } {
-    return {
-      suggestion: "suggestion"
-    };
-  }
-
-  static types(): { [key: string]: any } {
-    return {
-      suggestion: "string"
-    };
-  }
-
-  constructor(map?: { [key: string]: any }) {
-    super(map);
-  }
-}
-
-
-export default class Client {
-  _endpoint: string;
-  _protocol: string;
-  _userAgent: string;
-  _credential: Credential;
+import { SearchQuery, SearchResponse } from "./interface/search";
+import { SuggestQuery, SuggestResponse } from "./interface/suggest";
+import { Behavior } from "./interface/collect";
+import { Document } from "./interface/document";
+import { HotQuery, HotResponse } from "./interface/hot";
+import { Config, Response } from "./interface/base";
+// import { snakeCase } from "lodash";
+
+export * from "./interface/collect";
+export * from "./interface/hot";
+export * from "./interface/document";
+export * from "./interface/search";
+export * from "./interface/suggest";
+export * from "./interface/base";
+
+export class Client {
+  readonly #endpoint: string;
+  readonly #protocol: string;
+  readonly #userAgent: string;
+  readonly #credential: Credential;
+  readonly #appName: string;
 
   constructor(config: Config) {
     if (Util.isUnset($tea.toMap(config))) {
@@ -638,19 +36,20 @@ export default class Client {
       config.type = "access_key";
     }
 
-    let credentialConfig = new $Credential.Config({
+    const credentialConfig = new $Credential.Config({
       accessKeyId: config.accessKeyId,
       type: config.type,
       accessKeySecret: config.accessKeySecret,
       securityToken: config.securityToken
     });
-    this._credential = new Credential(credentialConfig);
-    this._endpoint = config.endpoint;
-    this._protocol = config.protocol;
-    this._userAgent = config.userAgent;
+    this.#credential = new Credential(credentialConfig);
+    this.#endpoint = config.endpoint;
+    this.#protocol = config.protocol;
+    this.#userAgent = config.userAgent;
+    this.#appName = config.appName;
   }
 
-  async _request(method: string, pathname: string, query: { [key: string]: any }, headers: { [key: string]: string }, body: any, runtime: $Util.RuntimeOptions): Promise<{ [key: string]: any }> {
+  private async request(method: string, pathname: string, query: { [key: string]: any }, body: any, runtime: $Util.RuntimeOptions): Promise<{ [key: string]: any }> {
     const _runtime: { [key: string]: any } = {
       timeouted: "retry",
       readTimeout: runtime.readTimeout,
@@ -684,21 +83,20 @@ export default class Client {
       _retryTimes = _retryTimes + 1;
       try {
         let request_ = new $tea.Request();
-        let accesskeyId = await this.getAccessKeyId();
+        let accessKeyId = await this.getAccessKeyId();
         let accessKeySecret = await this.getAccessKeySecret();
-        request_.protocol = Util.defaultString(this._protocol, "HTTP");
+        request_.protocol = Util.defaultString(this.#protocol, "HTTP");
         request_.method = method;
         request_.pathname = pathname;
         request_.headers = {
           "user-agent": this.getUserAgent(),
           "Content-Type": "application/json",
-          Date: OpenSearchUtil.getDate(),
-          host: Util.defaultString(this._endpoint, `opensearch-cn-hangzhou.aliyuncs.com`),
           "X-Opensearch-Nonce": Util.getNonce(),
-          ...headers
+          Date: new Date().toISOString().replace(/\.\d+/, ""),
+          host: Util.defaultString(this.#endpoint, `opensearch-cn-hangzhou.aliyuncs.com`)
         };
         if (!Util.isUnset(query)) {
-          request_.query = Util.stringifyMapValue(query);
+          request_.query = query;
         }
 
         if (!Util.isUnset(body)) {
@@ -707,24 +105,19 @@ export default class Client {
           request_.body = new $tea.BytesReadable(reqBody);
         }
 
-        request_.headers["Authorization"] = OpenSearchUtil.getSignature(request_, accesskeyId, accessKeySecret);
+        request_.headers["Authorization"] = OpenSearchUtil.getSignature(request_, accessKeyId, accessKeySecret);
         _lastRequest = request_;
-        let response_ = await $tea.doAction(request_, _runtime);
+        const res = await $tea.doAction(request_, _runtime);
 
-        let objStr = await Util.readAsString(response_.body);
-        if (Util.is4xx(response_.statusCode) || Util.is5xx(response_.statusCode)) {
-          throw $tea.newError({
-            message: response_.statusMessage,
-            data: objStr,
-            code: response_.statusCode
-          });
+        let objStr = await Util.readAsString(res.body);
+        if (Util.is4xx(res.statusCode) || Util.is5xx(res.statusCode)) {
+          throw new Error(res.statusMessage);
         }
 
         let obj = Util.parseJSON(objStr);
-        let res = Util.assertAsMap(obj);
         return {
-          body: res,
-          headers: response_.headers
+          headers: res.headers,
+          body: Util.assertAsMap(obj)
         };
       } catch (ex) {
         if ($tea.isRetryable(ex)) {
@@ -737,112 +130,129 @@ export default class Client {
     throw $tea.newUnretryableError(_lastRequest);
   }
 
-  /**
+  /*
    * 系统提供了丰富的搜索语法以满足用户各种场景下的搜索需求。
    */
-  async searchEx(appName: string, request: SearchRequestModel, runtime: $Util.RuntimeOptions): Promise<SearchResponseModel> {
-    return $tea.cast<SearchResponseModel>(await this._request("GET", `/v3/openapi/apps/${appName}/search`, $tea.toMap(request.query), request.headers, null, runtime), new SearchResponseModel({}));
+  async searchEx(search: SearchQuery, runtime: $Util.RuntimeOptions): Promise<SearchResponse> {
+    const { query, config = { start: 0, hit: 20, format: "fulljson" } } = search;
+    //Config子句
+    const conf = Object.entries(config).map(([k, v]) => `${k}=${v}`).join(",");
+    search.query = [query, `config=${conf}`].join("&&");
+    delete search.config;
+    const { body } = await this.request("GET", `/v3/openapi/apps/${this.#appName}/search`, search, null, runtime);
+    return body as SearchResponse;
   }
 
-  /**
+  /*
    * 系统提供了丰富的搜索语法以满足用户各种场景下的搜索需求。
    */
-  async search(appName: string, request: SearchRequestModel): Promise<SearchResponseModel> {
+  async search(query: SearchQuery): Promise<SearchResponse> {
     let runtime = new $Util.RuntimeOptions({
       connectTimeout: 5,
       autoretry: false,
       ignoreSSL: false,
       maxIdleConns: 50
     });
-    return await this.searchEx(appName, request, runtime);
+    return this.searchEx(query, runtime);
   }
 
-  /**
+  /*
    * 下拉提示是搜索服务的基础功能，在用户输入查询词的过程中，智能推荐候选query，减少用户输入，帮助用户尽快找到想要的内容。
    */
-  async suggestEx(appName: string, modelName: string, request: SuggestRequestModel, runtime: $Util.RuntimeOptions): Promise<SuggestResponseModel> {
-    return $tea.cast<SuggestResponseModel>(await this._request("GET", `/v3/openapi/apps/${appName}/suggest/${modelName}/search`, $tea.toMap(request.query), request.headers, null, runtime), new SuggestResponseModel({}));
+  async suggestEx(modelName: string, query: SuggestQuery, runtime: $Util.RuntimeOptions): Promise<SuggestResponse> {
+    const { body } = await this.request("GET", `/v3/openapi/apps/${this.#appName}/suggest/${modelName}/search`, query, null, runtime);
+    return body as SuggestResponse;
   }
 
-  /**
+  /*
    * 下拉提示是搜索服务的基础功能，在用户输入查询词的过程中，智能推荐候选query，减少用户输入，帮助用户尽快找到想要的内容。
    */
-  async suggest(appName: string, modelName: string, request: SuggestRequestModel): Promise<SuggestResponseModel> {
+  async suggest(modelName: string, query: SuggestQuery): Promise<SuggestResponse> {
     let runtime = new $Util.RuntimeOptions({
       connectTimeout: 5,
       autoretry: false,
       ignoreSSL: false,
       maxIdleConns: 50
     });
-    return await this.suggestEx(appName, modelName, request, runtime);
+    return await this.suggestEx(modelName, query, runtime);
   }
 
-  /**
+  /*
+  * 热搜列表
+  * */
+  async hot(query: HotQuery): Promise<HotResponse> {
+    let runtime = new $Util.RuntimeOptions({
+      connectTimeout: 5,
+      autoretry: false,
+      ignoreSSL: false,
+      maxIdleConns: 50
+    });
+
+    const res = await this.request("GET", `/v3/openapi/apps/${this.#appName}/actions/hot`, query, null, runtime);
+    return res?.body as HotResponse;
+  }
+
+  /*
    * 支持新增、更新、删除 等操作，以及对应批量操作
    */
-  async pushDocumentEx(appName: string, tableName: string, request: PushDocumentRequestModel, runtime: $Util.RuntimeOptions): Promise<PushDocumentResponseModel> {
-    return $tea.cast<PushDocumentResponseModel>(await this._request("POST", `/v3/openapi/apps/${appName}/${tableName}/actions/bulk`, null, request.headers, request.body, runtime), new PushDocumentResponseModel({}));
+  async pushDocumentEx(tableName: string, data: Document[], runtime: $Util.RuntimeOptions): Promise<Response> {
+    const res = await this.request("POST", `/v3/openapi/apps/${this.#appName}/${tableName}/actions/bulk`, null, data, runtime);
+    console.log(res);
+    return res?.body as Response;
   }
 
-  /**
+  /*
    * 支持新增、更新、删除 等操作，以及对应批量操作
    */
-  async pushDocument(appName: string, tableName: string, request: PushDocumentRequestModel): Promise<PushDocumentResponseModel> {
+  async pushDocument(tableName: string, data: Document[]): Promise<Response> {
     let runtime = new $Util.RuntimeOptions({
       connectTimeout: 5,
       autoretry: false,
       ignoreSSL: false,
       maxIdleConns: 50
     });
-    return this.pushDocumentEx(appName, tableName, request, runtime);
+    return this.pushDocumentEx(tableName, data, runtime);
   }
 
-  /**
+  /*
    * 为了给客户提供更高质量的搜索效果，opensearch目前支持客户通过server端上传点击数据。
    */
-  async collectDataEx(appName: string, collectorName: string, request: CollectDataRequestModel, runtime: $Util.RuntimeOptions): Promise<CollectDataResponseModel> {
-    return $tea.cast<CollectDataResponseModel>(await this._request("POST", `/v3/openapi/app-groups/${appName}/data-collections/${collectorName}/actions/bulk`, null, request.headers, request.body, runtime), new CollectDataResponseModel({}));
+  async collectDataEx(collectorName: string, data: Behavior, runtime: $Util.RuntimeOptions): Promise<Response> {
+    const { body } = await this.request("POST", `/v3/openapi/app-groups/${this.#appName}/data-collections/${collectorName}/actions/bulk`, null, data, runtime);
+    return body as Response;
   }
 
-  /**
+  /*
    * 为了给客户提供更高质量的搜索效果，opensearch目前支持客户通过server端上传点击数据。
    */
-  async collectData(appName: string, collectorName: string, request: CollectDataRequestModel): Promise<CollectDataResponseModel> {
+  async collectData(collectorName: string, data: Behavior): Promise<Response> {
     let runtime = new $Util.RuntimeOptions({
       connectTimeout: 5,
       autoretry: false,
       ignoreSSL: false,
       maxIdleConns: 50
     });
-    return await this.collectDataEx(appName, collectorName, request, runtime);
-  }
-
-  setUserAgent(userAgent: string): void {
-    this._userAgent = userAgent;
-  }
-
-  appendUserAgent(userAgent: string): void {
-    this._userAgent = `${this._userAgent} ${userAgent}`;
+    return await this.collectDataEx(collectorName, data, runtime);
   }
 
   getUserAgent(): string {
-    return Util.getUserAgent(this._userAgent);
+    return Util.getUserAgent(this.#userAgent);
   }
 
   async getAccessKeyId(): Promise<string> {
-    if (Util.isUnset(this._credential)) {
+    if (Util.isUnset(this.#credential)) {
       return "";
     }
 
-    return this._credential.getAccessKeyId();
+    return this.#credential.getAccessKeyId();
   }
 
   async getAccessKeySecret(): Promise<string> {
-    if (Util.isUnset(this._credential)) {
+    if (Util.isUnset(this.#credential)) {
       return "";
     }
 
-    return this._credential.getAccessKeySecret();
+    return this.#credential.getAccessKeySecret();
   }
 
 }
