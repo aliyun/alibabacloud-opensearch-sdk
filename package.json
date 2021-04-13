@@ -1,6 +1,6 @@
 {
   "name": "opensearch-sdk",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "",
   "main": "lib/index.js",
   "files": [
@@ -15,8 +15,8 @@
   "scripts": {
     "test": "mocha test",
     "test-cov": "nyc -e .ts -r=html -r=text -r=lcov npm run test",
-    "build": "tsc -b",
-    "prepublishOnly": "tsc -b"
+    "build": "rm -rf lib types && tsc -b",
+    "prepublishOnly": "yarn build"
   },
   "license": "ISC",
   "devDependencies": {

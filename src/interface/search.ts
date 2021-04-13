@@ -1,18 +1,18 @@
 export interface SearchQuery {
   query: string;
-  fetch_fields?: string[];
+  fetch_fields?: string | string[];
   qp?: string;
   disable?: string;
-  firstRankName?: string;
-  secondRankName?: string;
+  first_rank_name?: string;
+  second_rank_name?: string;
   user_id?: string;
   abtest?: string;
   category_prediction?: string;
   raw_query?: string;
   summary?: string;
   biz?: string;
-  request_id?: string;
-  config: {
+  from_request_id?: string;
+  config: string | {
     hit?: number;
     start?: number;
     format?: string;

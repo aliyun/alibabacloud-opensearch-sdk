@@ -133,11 +133,16 @@ export class Client {
    * 系统提供了丰富的搜索语法以满足用户各种场景下的搜索需求。
    */
   async searchEx(search: SearchQuery, runtime: $Util.RuntimeOptions): Promise<SearchResponse> {
-    const { query, config = { start: 0, hit: 20, format: "fulljson" } } = search;
+    const { fetch_fields, query, config = { start: 0, hit: 20, format: "fulljson" } } = search;
     //Config子句
-    const conf = Object.entries(config).map(([k, v]) => `${k}=${v}`).join(",");
+    const conf = Object.entries(config).map(([k, v]) => `${k}:${v}`).join(",");
     search.query = [query, `config=${conf}`].join("&&");
     delete search.config;
+    // fetch_fields
+    if (Array.isArray(fetch_fields)) {
+      search.fetch_fields = fetch_fields.join(";");
+    }
+
     const { body } = await this.request("GET", `/v3/openapi/apps/${this.#appName}/search`, search, null, runtime);
     return body as SearchResponse;
   }
@@ -196,7 +201,6 @@ export class Client {
    */
   async pushDocumentEx(tableName: string, data: Document[], runtime: $Util.RuntimeOptions): Promise<Response> {
     const res = await this.request("POST", `/v3/openapi/apps/${this.#appName}/${tableName}/actions/bulk`, null, data, runtime);
-    console.log(res);
     return res?.body as Response;
   }
 
@@ -214,7 +218,7 @@ export class Client {
   }
 
   /*
-   * 为了给客户提供更高质量的搜索效果，opensearch目前支持客户通过server端上传点击数据。
+   * 为了给客户提供更高质量的搜索效果，OpenSearch目前支持客户通过server端上传点击数据。
    */
   async collectDataEx(collectorName: string, data: Behavior, runtime: $Util.RuntimeOptions): Promise<Response> {
     const { body } = await this.request("POST", `/v3/openapi/app-groups/${this.#appName}/data-collections/${collectorName}/actions/bulk`, null, data, runtime);
@@ -222,7 +226,7 @@ export class Client {
   }
 
   /*
-   * 为了给客户提供更高质量的搜索效果，opensearch目前支持客户通过server端上传点击数据。
+   * 为了给客户提供更高质量的搜索效果，OpenSearch目前支持客户通过server端上传点击数据。
    */
   async collectData(collectorName: string, data: Behavior): Promise<Response> {
     let runtime = new $Util.RuntimeOptions({
