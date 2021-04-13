@@ -12,6 +12,6 @@ export interface Config {
 
 export interface Response {
   status?: string;
-  requestId?: string;
+  request_id?: string;
   errors?: Error[];
 }

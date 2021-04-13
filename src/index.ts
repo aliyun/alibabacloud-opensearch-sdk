@@ -8,7 +8,6 @@ import { Behavior } from "./interface/collect";
 import { Document } from "./interface/document";
 import { HotQuery, HotResponse } from "./interface/hot";
 import { Config, Response } from "./interface/base";
-// import { snakeCase } from "lodash";
 
 export * from "./interface/collect";
 export * from "./interface/hot";

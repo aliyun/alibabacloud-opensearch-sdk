@@ -6,7 +6,7 @@ export interface HotQuery {
 }
 
 export interface HotResponse {
-  request_id: number;
+  request_id: string;
   searchtime: number;
   result: Array<{ pv: number, hot: string }>;
 }
