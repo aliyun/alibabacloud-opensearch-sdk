@@ -15,10 +15,10 @@ jobs:
     - language: php
       php: '7.3'
       env: TEA_UTIL_ENV="php"
-    - language: csharp
-      mono: none
-      dist: xenial
-      env: TEA_UTIL_ENV="csharp"
+#    - language: csharp
+#      mono: none
+#      dist: xenial
+#      env: TEA_UTIL_ENV="csharp"
     - language: java
       jdk: openjdk8
       env: TEA_UTIL_ENV="java"
@@ -42,15 +42,9 @@ jobs:
       env: TEA_UTIL_ENV="go"
       install:
         - export GO111MODULE=on
-    - language: node_js
-      node_js: 12
-      env: TEA_UTIL_ENV="ts"
-    - language: python
-      python: 3.4
-      env: TEA_UTIL_ENV="python"
-    - language: python
-      python: 3.5
-      env: TEA_UTIL_ENV="python"
+#    - language: node_js
+#      node_js: 12
+#      env: TEA_UTIL_ENV="ts"
     - language: python
       python: 3.6
       env: TEA_UTIL_ENV="python"
