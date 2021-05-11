@@ -34,7 +34,7 @@ function run_csharp {
   dotnet --info
 
   # install
-  cd util/csharp/tests/ || return 126
+  cd csharp/tests/ || return 126
   dotnet tool install --global altcover.visualizer
   dotnet restore
   dotnet build
@@ -42,7 +42,7 @@ function run_csharp {
 
   # run tests
   dotnet test tests/ /p:AltCover=true || return 126
-  cd ../../
+  cd ../
 
   # upload code coverage report
   upload_codecov_report csharp csharp
@@ -56,10 +56,10 @@ function run_java {
 }
 
 function run_ts {
-  cd util/ts/ || return 126
+  cd ts/ || return 126
   npm install
   npm run test-cov || return 126
-  cd ../../
+  cd ../
   upload_codecov_report ts node_js
 }
 
@@ -72,8 +72,8 @@ function run_python {
   pip install coverage
   pip install alibabacloud-tea
 
-  coverage run --source="./alibabacloud_tea_util" -m pytest tests/test_* || return 126
-  cd ../../
+  coverage run --source="./alibabacloud_opensearch_util" -m pytest tests/test_* || return 126
+  cd ../
   upload_codecov_report python python
 }
 
