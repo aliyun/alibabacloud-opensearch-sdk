@@ -19,3 +19,9 @@ target/
 .settings/
 
 python/**/__pycache__/
+
+.nyc_output/
+coverage/
+node_modules/
+package-lock.json
+

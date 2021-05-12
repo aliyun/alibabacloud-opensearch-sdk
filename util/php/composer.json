@@ -9,8 +9,8 @@
     "alibabacloud/tea-roa-utils": "^0.1"
   },
   "require-dev": {
-    "phpunit/phpunit": "^4.8.35|^5.4.3",
-    "symfony/var-dumper": "^5.0"
+    "phpunit/phpunit": "*",
+    "symfony/var-dumper": "*"
   },
   "autoload": {
     "psr-4": {

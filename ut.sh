@@ -8,15 +8,6 @@ function upload_codecov_report {
   bash codecov.sh -cF "$2"
 }
 
-function run_php {
-  cd util/php/ || return 126
-  composer --version
-  composer install -vvv
-  composer test || return 126
-  cd ../../
-  upload_codecov_report php php
-}
-
 function run_go {
   cd util/golang/ || return 126
   export GO111MODULE=on
@@ -24,43 +15,6 @@ function run_go {
   go test -race -coverprofile=coverage.txt -covermode=atomic ./service/... || return 126
   cd ../../
   upload_codecov_report golang go
-}
-
-function run_csharp {
-  # before_install
-  wget https://download.visualstudio.microsoft.com/download/pr/42f39f2f-3f24-4340-8c57-0a3133620c21/0a353696275b00cbddc9f60069867cfc/dotnet-sdk-2.2.110-linux-x64.tar.gz
-  mkdir -p ~/dotnet/ && tar zxf dotnet-sdk-2.2.110-linux-x64.tar.gz -C ~/dotnet/
-  sudo ln -sf ~/dotnet/dotnet /usr/bin/dotnet
-  dotnet --info
-
-  # install
-  cd util/csharp/tests/ || return 126
-  dotnet tool install --global altcover.visualizer
-  dotnet restore
-  dotnet build
-  cd ../
-
-  # run tests
-  dotnet test tests/ /p:AltCover=true || return 126
-  cd ../../
-
-  # upload code coverage report
-  upload_codecov_report csharp csharp
-}
-
-function run_java {
-  cd util/java/ || return 126
-  mvn test -B || return 126
-  cd ../../
-  upload_codecov_report java java
-}
-
-function run_ts {
-  cd util/ts/ || return 126
-  npm install
-  npm run test-cov || return 126
-  cd ../../
-  upload_codecov_report ts node_js
 }
 
 function run_python {
@@ -92,30 +46,14 @@ function contains {
 
 lang=$1
 
-if [ "$lang" == "php" ]
-then
-  echo "run php"
-  run_php
-elif [ "$lang" == "go" ]
+if [ "$lang" == "go" ]
 then
   echo "run golang"
   run_go
-elif [ "$lang" == "csharp" ]
-then
-  echo "run csharp"
-  run_csharp
-elif [ "$lang" == "java" ]
-then
-  echo "run java"
-  run_java
 elif [ "$lang" == "python" ] 
 then
   echo "run python"
   run_python
-elif [ "$lang" == "ts" ]
-then
-  echo "run ts"
-  run_ts
 fi
 
 exit $?

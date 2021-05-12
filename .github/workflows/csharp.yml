@@ -1,0 +1,25 @@
+name: C#
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.1.811
+    - name: Run unit tests
+      run: |
+        dotnet --info
+        cd csharp/core/
+        dotnet restore
+        dotnet build
