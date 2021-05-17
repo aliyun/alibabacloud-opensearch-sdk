@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
+
+import base64
 import datetime
 import hashlib
 import hmac
-import base64
+import time
+import urllib.parse as parse
 
 from Tea.request import TeaRequest
 from typing import List, Dict, Any
@@ -16,23 +19,31 @@ def _get_canonicalized_headers(headers):
     canon_keys.sort()
     canon_header = ''
     for k in canon_keys:
-        canon_header += f'{k}:{headers[k]}\n'
+        canon_header += f'{k.lower()}:{headers[k]}\n'
     return canon_header
 
 
 def _get_canonicalized_resource(pathname, query):
-    if len(query) <= 0:
-        return pathname
-    resource = f'{pathname}?'
-    query_list = sorted(list(query))
-    for key in query_list:
-        if query[key] is not None:
-            if query[key] == '':
-                s = f'{key}&'
+    canonicalized = parse.quote(pathname).replace("%2F", "/").replace("%3F", "?").replace("%3D", "=").replace("%26", "&")
+    sorted_params = sorted(query)
+    params_to_sign = []
+
+    for key in sorted_params:
+        value= query[key]
+        if value is not None:
+            if value=="":
+                params_to_sign.append(parse.quote(key))
             else:
-                s = f'{key}={query}&'
-            resource += s
-    return resource[:-1]
+                params_to_sign.append("{}={}".format(parse.quote(f'{key}'), parse.quote(f'{value}')))
+    if len(params_to_sign) > 0:
+        return canonicalized + "?" + "&".join(params_to_sign)
+    return canonicalized
+
+
+def _get_header(headers, key, default_value=None):
+    if key in headers and headers[key] is not None:
+        return headers[key]
+    return default_value
 
 
 class OpensearchUtil:
@@ -87,7 +98,7 @@ class OpensearchUtil:
         @example 2006-01-02T15:04:05Z
         @return: date string
         """
-        return datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
+        return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
     @staticmethod
     def get_signature(
@@ -104,9 +115,9 @@ class OpensearchUtil:
         """
         method, pathname, headers, query = request.method, request.pathname, request.headers, request.query
 
-        content_md5 = '' if headers.get('content-md5') is None else headers.get('content-md5')
-        content_type = '' if headers.get('content-type') is None else headers.get('content-type')
-        date = '' if headers.get('date') is None else headers.get('date')
+        content_md5 = _get_header(headers,"Content-MD5","")
+        content_type =  _get_header(headers,"Content-Type","")
+        date =  _get_header(headers,"Date","")
 
         canon_headers = _get_canonicalized_headers(headers)
         canon_resource = _get_canonicalized_resource(pathname, query)
