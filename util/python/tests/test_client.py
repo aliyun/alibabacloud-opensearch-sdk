@@ -41,4 +41,4 @@ class TestClient(unittest.TestCase):
             'content-md5': '098f6bcd4621d373cade4e832627b4f6'
         }
         result = OpensearchUtil.get_signature(request, 'AccessKeyId', 'AccessKeySecret')
-        self.assertEqual('OPENSEARCH AccessKeyId:Vd4xkLD4OEWzRBLuja4xwuOZvoo=', result)
+        self.assertEqual('OPENSEARCH AccessKeyId:Puo3jkoIu0S1F8x3jHDxSpNhnQU=', result)
