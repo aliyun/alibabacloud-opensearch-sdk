@@ -35,6 +35,12 @@ def _get_canonicalized_resource(pathname, query):
     return resource[:-1]
 
 
+def _get_header(headers, key, default_value=None):
+    if key in headers and headers[key] is not None:
+        return headers[key]
+    return default_value
+
+
 class OpensearchUtil:
     """
     This module used for OpenSearch SDK
@@ -104,9 +110,9 @@ class OpensearchUtil:
         """
         method, pathname, headers, query = request.method, request.pathname, request.headers, request.query
 
-        content_md5 = '' if headers.get('content-md5') is None else headers.get('content-md5')
-        content_type = '' if headers.get('content-type') is None else headers.get('content-type')
-        date = '' if headers.get('date') is None else headers.get('date')
+        content_md5 = _get_header(headers,"Content-MD5","")
+        content_type =  _get_header(headers,"Content-Type","")
+        date =  _get_header(headers,"Date","")
 
         canon_headers = _get_canonicalized_headers(headers)
         canon_resource = _get_canonicalized_resource(pathname, query)
