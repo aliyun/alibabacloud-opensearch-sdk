@@ -5,6 +5,7 @@ import datetime
 import hashlib
 import hmac
 import time
+import urllib.parse as parse
 
 from Tea.request import TeaRequest
 from typing import List, Dict, Any
@@ -23,18 +24,20 @@ def _get_canonicalized_headers(headers):
 
 
 def _get_canonicalized_resource(pathname, query):
-    if len(query) <= 0:
-        return pathname
-    resource = f'{pathname}?'
-    query_list = sorted(list(query))
-    for key in query_list:
-        if query[key] is not None:
-            if query[key] == '':
-                s = f'{key}&'
+    canonicalized = parse.quote(pathname).replace("%2F", "/").replace("%3F", "?").replace("%3D", "=").replace("%26", "&")
+    sorted_params = sorted(query)
+    params_to_sign = []
+
+    for key in sorted_params:
+        value= query[key]
+        if value is not None:
+            if value=="":
+                params_to_sign.append(parse.quote(key))
             else:
-                s = f'{key}={query}&'
-            resource += s
-    return resource[:-1]
+                params_to_sign.append("{}={}".format(parse.quote(f'{key}'), parse.quote(f'{value}')))
+    if len(params_to_sign) > 0:
+        return canonicalized + "?" + "&".join(params_to_sign)
+    return canonicalized
 
 
 def _get_header(headers, key, default_value=None):
