@@ -1,12 +1,11 @@
 export interface Config {
   appName: string;
-  endpoint?: string;
-  protocol?: string;
-  type?: string;
+  endpoint: string;
   securityToken?: string;
   accessKeyId?: string;
   accessKeySecret?: string;
   userAgent?: string;
+  timeout?: number;
 }
 
 

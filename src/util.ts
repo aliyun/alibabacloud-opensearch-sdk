@@ -1,37 +1,33 @@
-import * as $tea from '@alicloud/tea-typescript';
-import crypto from 'crypto';
+import crypto from "crypto";
+import { AxiosRequestConfig } from "axios";
 
-function getSignedStr(request: $tea.Request, resource: string, accessKeySecret: string): string {
+function getSignedStr(conf: AxiosRequestConfig, resource: string, accessKeySecret: string): string {
   // Find out the "x-oss-"'s address in header of the request
   const tmp: { [key: string]: string } = {};
-  Object.keys(request.headers).forEach(key => {
-    if (key.toLowerCase().startsWith('x-opensearch-')) {
-      tmp[key.toLowerCase()] = request.headers[key];
+  Object.keys(conf.headers).forEach(key => {
+    if (key.toLowerCase().startsWith("x-opensearch-")) {
+      tmp[key.toLowerCase()] = conf.headers[key];
     }
-  })
-
-  const keys = Object.keys(tmp).sort();
-  // Get the canonicalizedOSSHeaders
-  let canonicalizedOSSHeaders = '';
-  keys.forEach(key => {
-    canonicalizedOSSHeaders += `${key}:${tmp[key]}\n`;
   });
 
-  // Give other parameters values
-  // when sign URL, date is expires
-  let date = request.headers['Date'];
-  let contentType = request.headers['Content-Type'];
-  let contentMd5 = request.headers['Content-MD5'];
-  let signStr = `${request.method}\n${contentMd5 || ''}\n${contentType}\n${date}\n${canonicalizedOSSHeaders}${resource}`;
-  const hmac = crypto.createHmac('sha1', accessKeySecret);
+  const header = Object.keys(tmp).sort().map(key => `${key}:${tmp[key]}`).join("\n");
+  const signStr = [
+    conf.method,
+    conf.headers["Content-MD5"] || "",
+    conf.headers["Content-Type"],
+    conf.headers["Date"],
+    header,
+    resource
+  ].join("\n");
+  const hmac = crypto.createHmac("sha1", accessKeySecret);
   hmac.update(signStr);
-  return  hmac.digest('base64');
+  return hmac.digest("base64");
 }
 
-function getSignature(request: $tea.Request, accessKeySecret: string): string {
-  let resource = request.pathname;
+function getSignature(conf: AxiosRequestConfig, accessKeySecret: string): string {
+  let resource = conf.url;
   const params = Object
-    .entries<string>(request.query)
+    .entries<string>(conf.params)
     .sort()
     .filter(([, value]) => typeof value !== "undefined" && value !== null)
     .map(([key, value]) => {
@@ -44,20 +40,16 @@ function getSignature(request: $tea.Request, accessKeySecret: string): string {
     resource += `?${params.join("&")}`;
   }
 
-  return getSignedStr(request, resource, accessKeySecret)
+  return getSignedStr(conf, resource, accessKeySecret);
 }
 
 
-export default class Client {
+export class Util {
   /*
-   * Get signature with request, accesskeyId, accessKeySecret.
    * @return signature string
-   * @param request
-   * @param accessKeyId
-   * @param accessKeySecret
    */
-  static getSignature(request: $tea.Request, accessKeyId: string, accessKeySecret: string): string {
-    return 'OPENSEARCH ' + accessKeyId + ':' + getSignature(request, accessKeySecret);
+  static getSignature(conf: AxiosRequestConfig, accessKeyId: string, accessKeySecret: string): string {
+    return "OPENSEARCH " + accessKeyId + ":" + getSignature(conf, accessKeySecret);
   }
 
   /*
@@ -65,8 +57,11 @@ export default class Client {
    * @param content the string which will be calculated
    * @return md5 string
    */
-  static getContentMD5(content: string): string {
-    return crypto.createHash('md5').update(content).digest('hex');
+  static getContentMD5(body: { [key: string]: unknown }): string {
+    return crypto.createHash("md5").update(JSON.stringify(body)).digest("hex");
   }
 
+  static genNonce(): string {
+    return `${Date.now()}${Math.round(Math.random() * 100)}`;
+  }
 }
