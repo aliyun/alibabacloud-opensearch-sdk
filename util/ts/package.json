@@ -19,8 +19,7 @@
     "typescript": "^3.7.5"
   },
   "dependencies": {
-    "@alicloud/tea-typescript": "latest",
-    "moment": "^2.27.0"
+    "@alicloud/tea-typescript": "latest"
   },
   "files": [
     "dist",

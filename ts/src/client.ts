@@ -690,6 +690,7 @@ export default class Client {
         request_.pathname = pathname;
         request_.headers = {
           'user-agent': this.getUserAgent(),
+          'Content-Type': 'application/json',
           Date: OpenSearchUtil.getDate(),
           host: Util.defaultString(this._endpoint, `opensearch-cn-hangzhou.aliyuncs.com`),
           'X-Opensearch-Nonce': Util.getNonce(),

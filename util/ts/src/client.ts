@@ -3,7 +3,6 @@
  * This module used for OpenSearch SDK
  */
 import * as $tea from '@alicloud/tea-typescript';
-import moment from 'moment';
 import crypto from 'crypto';
 
 function getSignedStr(request: $tea.Request, resource: string, accessKeySecret: string): string {
@@ -36,20 +35,20 @@ function getSignedStr(request: $tea.Request, resource: string, accessKeySecret: 
 
 function getSignature(request: $tea.Request, accessKeySecret: string): string {
   let resource = request.pathname;
-  const keys = Object.keys(request.query);
-  if (resource.indexOf('?') === -1 && keys.length > 0) {
-    resource += '?';
+  const params = Object
+    .entries<string>(request.query)
+    .filter(([, value]) => typeof value !== "undefined" && value !== null)
+    .map(([key, value]) => {
+      let valueStr = encodeURIComponent(value);
+      valueStr = valueStr.replace(/'/g, "%27");
+      return `${key}=${valueStr}`;
+    });
+
+  if (params.length) {
+    resource += `?${params.join("&")}`;
   }
-  keys.forEach(key => {
-    let value = request.query[key];
-    if (typeof value === 'undefined' || value === null) {
-      return;
-    }
-    let valueStr = encodeURIComponent(value);
-    valueStr = valueStr.replace(/'/g, '%27');
-    resource += `${key}=${valueStr}&`;
-  })
-  return getSignedStr(request, resource.slice(0, -1), accessKeySecret)
+
+  return getSignedStr(request, resource, accessKeySecret)
 }
 
 
@@ -92,7 +91,7 @@ export default class Client {
    * @return date string
    */
   static getDate(): string {
-    return moment().format('YYYY-MM-DDTHH:mm:ss\\Z');
+    return new Date().toISOString().replace(/\.\d+/,'');
   }
 
   /**
