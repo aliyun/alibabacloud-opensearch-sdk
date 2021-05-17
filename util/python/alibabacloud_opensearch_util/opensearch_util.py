@@ -18,7 +18,7 @@ def _get_canonicalized_headers(headers):
     canon_keys.sort()
     canon_header = ''
     for k in canon_keys:
-        canon_header += f'{k}:{headers[k]}\n'
+        canon_header += f'{k.lower()}:{headers[k]}\n'
     return canon_header
 
 
