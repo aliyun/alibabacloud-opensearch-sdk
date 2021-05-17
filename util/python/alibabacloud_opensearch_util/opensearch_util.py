@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+
+import base64
 import datetime
 import hashlib
 import hmac
-import base64
+import time
 
 from Tea.request import TeaRequest
 from typing import List, Dict, Any
@@ -93,7 +95,7 @@ class OpensearchUtil:
         @example 2006-01-02T15:04:05Z
         @return: date string
         """
-        return datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
+        return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
     @staticmethod
     def get_signature(
