@@ -40,7 +40,7 @@ export class Client {
     let accessKeyId = await this.#credential.getAccessKeyId();
     let accessKeySecret = await this.#credential.getAccessKeySecret();
 
-    const { params, data } = options;
+    const { params = {}, data } = options;
     const conf: AxiosRequestConfig = {
       url,
       data,
