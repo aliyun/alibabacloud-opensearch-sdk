@@ -37,7 +37,7 @@
     <PackageReference Include="Aliyun.Credentials" Version="1.2.1"/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AlibabaCloud.OpenSearchUtil" Version="0.0.1"/>
+    <PackageReference Include="AlibabaCloud.OpenSearchUtil" Version="1.0.1"/>
     <PackageReference Include="AlibabaCloud.TeaUtil" Version="0.1.5"/>
   </ItemGroup>
 </Project>
