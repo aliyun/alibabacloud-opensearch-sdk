@@ -149,7 +149,7 @@ namespace AlibabaCloud.OpenSearchUtil
             string date = request.Headers.Get("Date");
             string method = request.Method.ToUpper();
 
-            string signStr = string.Format("{0}\n{1}\n{2}\n{3}\n{4}{5}", request.Method, contentMd5, contentType, date, canonicalizedOSSHeaders, resource);
+            string signStr = string.Format("{0}\n{1}\n{2}\n{3}\n{4}{5}", method, contentMd5, contentType, date, canonicalizedOSSHeaders, resource);
             System.Diagnostics.Debug.WriteLine("Alibabacloud.OpenSearchUtil.GetSignature:stringToSign is " + signStr.ToString());
             byte[] signData;
             using (KeyedHashAlgorithm algorithm = CryptoConfig.CreateFromName("HMACSHA1") as KeyedHashAlgorithm)
