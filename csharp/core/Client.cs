@@ -13,7 +13,7 @@ using AlibabaCloud.SDK.OpenSearch.Models;
 
 namespace AlibabaCloud.SDK.OpenSearch
 {
-    public class Client 
+    public class Client
     {
         protected string _endpoint;
         protected string _protocol;
@@ -59,15 +59,17 @@ namespace AlibabaCloud.SDK.OpenSearch
                 {"noProxy", runtime.NoProxy},
                 {"maxIdleConns", runtime.MaxIdleConns},
                 {"retry", new Dictionary<string, object>
-                {
-                    {"retryable", runtime.Autoretry},
-                    {"maxAttempts", AlibabaCloud.TeaUtil.Common.DefaultNumber(runtime.MaxAttempts, 3)},
-                }},
+                    {
+                        {"retryable", runtime.Autoretry},
+                        {"maxAttempts", AlibabaCloud.TeaUtil.Common.DefaultNumber(runtime.MaxAttempts, 3)},
+                    }
+                },
                 {"backoff", new Dictionary<string, object>
-                {
-                    {"policy", AlibabaCloud.TeaUtil.Common.DefaultString(runtime.BackoffPolicy, "no")},
-                    {"period", AlibabaCloud.TeaUtil.Common.DefaultNumber(runtime.BackoffPeriod, 1)},
-                }},
+                    {
+                        {"policy", AlibabaCloud.TeaUtil.Common.DefaultString(runtime.BackoffPolicy, "no")},
+                        {"period", AlibabaCloud.TeaUtil.Common.DefaultNumber(runtime.BackoffPeriod, 1)},
+                    }
+                },
                 {"ignoreSSL", runtime.IgnoreSSL},
             };
 
@@ -79,7 +81,7 @@ namespace AlibabaCloud.SDK.OpenSearch
             {
                 if (_retryTimes > 0)
                 {
-                    int backoffTime = TeaCore.GetBackoffTime((IDictionary)runtime_["backoff"], _retryTimes);
+                    int backoffTime = TeaCore.GetBackoffTime((IDictionary) runtime_["backoff"], _retryTimes);
                     if (backoffTime > 0)
                     {
                         TeaCore.Sleep(backoffTime);
@@ -91,6 +93,7 @@ namespace AlibabaCloud.SDK.OpenSearch
                     TeaRequest request_ = new TeaRequest();
                     string accesskeyId = GetAccessKeyId();
                     string accessKeySecret = GetAccessKeySecret();
+                    string securityToken = GetSecurityToken();
                     request_.Protocol = AlibabaCloud.TeaUtil.Common.DefaultString(_protocol, "HTTP");
                     request_.Method = method;
                     request_.Pathname = pathname;
@@ -116,26 +119,32 @@ namespace AlibabaCloud.SDK.OpenSearch
                         request_.Headers["Content-Type"] = "application/json";
                         request_.Body = TeaCore.BytesReadable(reqBody);
                     }
+                    // 增加对 STS 鉴权支持.
+                    if (!AlibabaCloud.TeaUtil.Common.IsUnset(securityToken))
+                    {
+                        request_.Headers["X-Opensearch-Security-Token"] = securityToken;
+                    }
                     request_.Headers["Authorization"] = AlibabaCloud.OpenSearchUtil.Common.GetSignature(request_, accesskeyId, accessKeySecret);
                     _lastRequest = request_;
                     TeaResponse response_ = TeaCore.DoAction(request_, runtime_);
 
                     string objStr = AlibabaCloud.TeaUtil.Common.ReadAsString(response_.Body);
+                    object obj = AlibabaCloud.TeaUtil.Common.ParseJSON(objStr);
+                    Dictionary<string, object> res = AlibabaCloud.TeaUtil.Common.AssertAsMap(obj);
                     if (AlibabaCloud.TeaUtil.Common.Is4xx(response_.StatusCode) || AlibabaCloud.TeaUtil.Common.Is5xx(response_.StatusCode))
                     {
                         throw new TeaException(new Dictionary<string, object>
-                        {
-                            {"message", response_.StatusMessage},
-                            {"data", objStr},
-                            {"code", response_.StatusCode},
-                        });
+                            {
+                                {"message", response_.StatusMessage},
+                                {"data", res},
+                                {"code", response_.StatusCode}
+                            }
+                        );
                     }
-                    object obj = AlibabaCloud.TeaUtil.Common.ParseJSON(objStr);
-                    Dictionary<string, object> res = AlibabaCloud.TeaUtil.Common.AssertAsMap(obj);
                     return new Dictionary<string, object>
                     {
                         {"body", res},
-                        {"headers", response_.Headers},
+                        {"headers", response_.Headers}
                     };
                 }
                 catch (Exception e)
