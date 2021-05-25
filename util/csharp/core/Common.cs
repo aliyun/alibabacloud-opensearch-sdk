@@ -18,7 +18,7 @@ using System.Globalization;
 
 namespace AlibabaCloud.OpenSearchUtil
 {
-    public class Common 
+    public class Common
     {
 
         /**
@@ -63,7 +63,7 @@ namespace AlibabaCloud.OpenSearchUtil
          */
         public static string GetDate()
         {
-            return DateTime.Now.ToString("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            return DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd'T'HH:mm:ss'Z'");
         }
 
         /**
@@ -105,7 +105,7 @@ namespace AlibabaCloud.OpenSearchUtil
         public static string MapToString(Dictionary<string, string> origin, string sep)
         {
             string ret = string.Empty;
-            foreach(var keypair in origin)
+            foreach (var keypair in origin)
             {
                 ret += keypair.Key + sep + keypair.Value + ",";
             }
@@ -113,13 +113,20 @@ namespace AlibabaCloud.OpenSearchUtil
             return ret.TrimEnd(',');
         }
 
+        /**
+         * Compose the string to Sign.
+         * @param request TeaRequest
+         * @param resource opensearch Uri with path.
+         * @param accessKeySecret .
+         * @return SignedStr  SignedString.
+         */
         internal static string GetSignedStr(TeaRequest request, string resource, string accessKeySecret)
         {
-            // Find out the "x-oss-"'s address in header of the request
+            // Find out the "x-opensearch-"'s address in header of the request
             var tmp = new Dictionary<string, string>();
-            foreach(var keypair in request.Headers)
+            foreach (var keypair in request.Headers)
             {
-                if(keypair.Key.ToSafeString().ToLower().StartsWith("x-opensearch-"))
+                if (keypair.Key.ToSafeString().ToLower().StartsWith("x-opensearch-"))
                 {
                     tmp.Add(keypair.Key.ToSafeString().ToLower(), keypair.Value);
                 }
@@ -128,20 +135,21 @@ namespace AlibabaCloud.OpenSearchUtil
             List<string> sortedKeys = tmp.Keys.ToList();
             sortedKeys.Sort();
 
-            // Get the canonicalizedOSSHeaders
-            string canonicalizedOSSHeaders = string.Empty;
-            foreach(string key in sortedKeys)
+            // Get the canonicalizedHeaders
+            string canonicalizedHeaders = string.Empty;
+            foreach (string key in sortedKeys)
             {
-                canonicalizedOSSHeaders += string.Format("{0}:{1}\n", key, tmp[key]);
+                canonicalizedHeaders += $"{key}:{tmp[key]}\n";
             }
 
             // Give other parameters values
             // when sign URL, date is expires
-            string date = request.Headers.Get("Date");
             string contentType = request.Headers.Get("Content-Type");
             string contentMd5 = request.Headers.Get("Content-MD5").ToSafeString();
-            string signStr = string.Format("{0}\n{1}\n{2}\n{3}\n{4}{5}", request.Method, contentMd5, contentType, date, canonicalizedOSSHeaders, resource);
+            string date = request.Headers.Get("Date");
+            string method = request.Method.ToUpper();
 
+            string signStr = $"{method}\n{contentMd5}\n{contentType}\n{date}\n{canonicalizedHeaders}{resource}";
             System.Diagnostics.Debug.WriteLine("Alibabacloud.OpenSearchUtil.GetSignature:stringToSign is " + signStr.ToString());
             byte[] signData;
             using (KeyedHashAlgorithm algorithm = CryptoConfig.CreateFromName("HMACSHA1") as KeyedHashAlgorithm)
@@ -155,26 +163,38 @@ namespace AlibabaCloud.OpenSearchUtil
 
         internal static string GetSignature(TeaRequest request, string accessKeySecret)
         {
-            string resource = request.Pathname;
-            if(!resource.Contains('?'))
-            {
-                resource += '?';
-            }
+            string resource = request.Pathname
+                .Replace("%2F", "/")
+                .Replace("%3F", "?")
+                .Replace("%3D", "=")
+                .Replace("%26", "&");
 
-            foreach(var keypair in request.Query)
+            List<string> sortedKeys = request.Query.Keys.ToList();
+            var queryPairsList = new List<string>();
+
+            sortedKeys.Sort();
+
+            foreach (string key in sortedKeys)
             {
-                string value = keypair.Value;
-                if(value == null)
+                string value = request.Query.Get(key);
+                if (value == null)
                 {
                     continue;
                 }
 
                 string valueStr = PercentEncode(value);
                 valueStr = valueStr.Replace("'", "%27");
-                resource += keypair.Key + "=" + valueStr + "&";
+                queryPairsList.Add(key + "=" + valueStr);
             }
 
-            return GetSignedStr(request, resource.TrimEnd('&'), accessKeySecret);
+            String queryPairsString = Join(queryPairsList,"&");
+
+            if (queryPairsString.Length > 0)
+            {
+                resource = resource + "?" + queryPairsString;
+            }
+
+            return GetSignedStr(request, resource, accessKeySecret);
         }
 
         internal static string PercentEncode(string value)
@@ -194,12 +214,16 @@ namespace AlibabaCloud.OpenSearchUtil
                 }
                 else
                 {
-                    stringBuilder.Append("%").Append(string.Format(CultureInfo.InvariantCulture, "{0:X2}", (int)c));
+                    stringBuilder.Append("%").Append(string.Format(CultureInfo.InvariantCulture, "{0:X2}", (int) c));
                 }
             }
 
-            return stringBuilder.ToString().Replace("+", "%20")
-                .Replace("*", "%2A").Replace("~", "%7E");
+            string encodeStr = stringBuilder.ToString()
+                .Replace("+", "%20")
+                .Replace("*", "%2A")
+                .Replace("~", "%7E");
+
+            return encodeStr;
         }
     }
 }
