@@ -63,10 +63,17 @@ func getSignature(request *tea.Request, accessKeySecret string) string {
 	if !strings.Contains(resource, "?") && len(request.Query) > 0 {
 		resource += "?"
 	}
-	for key, value := range request.Query {
+	queryKeys := make([]string, len(request.Query))
+	for k,_ := range request.Query {
+		queryKeys = append(queryKeys, k)
+	}
+	sort.Strings(queryKeys)
+	for _, key := range queryKeys {
+		value := request.Query[key]
 		if value != nil {
 			tmp := url.QueryEscape(tea.StringValue(value))
 			tmp = strings.ReplaceAll(tmp, "'", "%27")
+			tmp = strings.ReplaceAll(tmp, "+", "%20")
 			if strings.HasSuffix(resource, "?") {
 				resource = resource + key + "=" + tmp
 			} else {

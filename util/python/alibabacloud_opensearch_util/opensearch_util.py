@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import base64
-import datetime
 import hashlib
 import hmac
 import time
 import urllib.parse as parse
+from typing import List, Dict, Any
 
 from Tea.request import TeaRequest
-from typing import List, Dict, Any
 
 
 def _get_canonicalized_headers(headers):
@@ -24,14 +23,19 @@ def _get_canonicalized_headers(headers):
 
 
 def _get_canonicalized_resource(pathname, query):
-    canonicalized = parse.quote(pathname).replace("%2F", "/").replace("%3F", "?").replace("%3D", "=").replace("%26", "&")
+    canonicalized = parse.quote(pathname)\
+        .replace("%2F", "/") \
+        .replace("%3F", "?") \
+        .replace("%3D", "=") \
+        .replace("%26", "&")
+
     sorted_params = sorted(query)
     params_to_sign = []
 
     for key in sorted_params:
-        value= query[key]
+        value = query[key]
         if value is not None:
-            if value=="":
+            if value == "":
                 params_to_sign.append(parse.quote(key))
             else:
                 params_to_sign.append("{}={}".format(parse.quote(f'{key}'), parse.quote(f'{value}')))
@@ -50,11 +54,9 @@ class OpensearchUtil:
     """
     This module used for OpenSearch SDK
     """
+
     @staticmethod
-    def append(
-        strings: List[str],
-        item: str,
-    ) -> List[str]:
+    def append(strings: List[str], item: str) -> List[str]:
         """
         Append a string into a string arrat
         @example append(["a", "b"], "c") => ["a", "b", "c"]
@@ -67,9 +69,7 @@ class OpensearchUtil:
         return string_list
 
     @staticmethod
-    def keys(
-        m: Dict[str, Any],
-    ) -> List[str]:
+    def keys(m: Dict[str, Any]) -> List[str]:
         """
         get the map's keys
         @param m: the map
@@ -78,10 +78,7 @@ class OpensearchUtil:
         return list(m.keys())
 
     @staticmethod
-    def join(
-        strings: List[str],
-        separator: str,
-    ) -> str:
+    def join(strings: List[str], separator: str) -> str:
         """
         Join array elements with a spearator string.
         @example join(["a", "b"], ".") => "a.b"
@@ -101,11 +98,7 @@ class OpensearchUtil:
         return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
     @staticmethod
-    def get_signature(
-        request: TeaRequest,
-        access_key_id: str,
-        access_key_secret: str,
-    ) -> str:
+    def get_signature(request: TeaRequest, access_key_id: str, access_key_secret: str) -> str:
         """
         Get signature with request, accesskeyId, accessKeySecret.
         @param request: the object of tea request
@@ -115,9 +108,9 @@ class OpensearchUtil:
         """
         method, pathname, headers, query = request.method, request.pathname, request.headers, request.query
 
-        content_md5 = _get_header(headers,"Content-MD5","")
-        content_type =  _get_header(headers,"Content-Type","")
-        date =  _get_header(headers,"Date","")
+        content_md5 = _get_header(headers, "Content-MD5", "")
+        content_type = _get_header(headers, "Content-Type", "")
+        date = _get_header(headers, "Date", "")
 
         canon_headers = _get_canonicalized_headers(headers)
         canon_resource = _get_canonicalized_resource(pathname, query)
@@ -129,9 +122,7 @@ class OpensearchUtil:
         return f'OPENSEARCH {access_key_id}:{signature}'
 
     @staticmethod
-    def get_content_md5(
-        content: str,
-    ) -> str:
+    def get_content_md5(content: str) -> str:
         """
         Get content MD5.
         @param content: the string which will be calculated
@@ -141,10 +132,7 @@ class OpensearchUtil:
         return md5.hexdigest()
 
     @staticmethod
-    def map_to_string(
-        origin: Dict[str, str],
-        sep: str,
-    ) -> str:
+    def map_to_string(origin: Dict[str, str], sep: str) -> str:
         """
         Splice origin into string with sep.
         @param origin: the source map
