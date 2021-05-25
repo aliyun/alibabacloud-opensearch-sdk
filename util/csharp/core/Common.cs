@@ -139,7 +139,7 @@ namespace AlibabaCloud.OpenSearchUtil
             string canonicalizedHeaders = string.Empty;
             foreach (string key in sortedKeys)
             {
-                canonicalizedHeaders += $"{key}:{tmp[key]}\n";
+                canonicalizedHeaders += string.Format("{0}:{1}\n", key, tmp[key]);
             }
 
             // Give other parameters values
@@ -149,7 +149,7 @@ namespace AlibabaCloud.OpenSearchUtil
             string date = request.Headers.Get("Date");
             string method = request.Method.ToUpper();
 
-            string signStr = $"{method}\n{contentMd5}\n{contentType}\n{date}\n{canonicalizedHeaders}{resource}";
+            string signStr = string.Format("{0}\n{1}\n{2}\n{3}\n{4}{5}", method, contentMd5, contentType, date, canonicalizedHeaders, resource);
             System.Diagnostics.Debug.WriteLine("Alibabacloud.OpenSearchUtil.GetSignature:stringToSign is " + signStr.ToString());
             byte[] signData;
             using (KeyedHashAlgorithm algorithm = CryptoConfig.CreateFromName("HMACSHA1") as KeyedHashAlgorithm)
