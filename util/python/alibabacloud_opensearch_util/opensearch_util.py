@@ -38,7 +38,7 @@ def _get_canonicalized_resource(pathname, query):
             if value == "":
                 params_to_sign.append(parse.quote(key))
             else:
-                params_to_sign.append("{}={}".format(parse.quote(f'{key}'), parse.quote(f'{value}')))
+                params_to_sign.append("{}={}".format(parse.quote(f'{key}'), parse.quote(f'{value}').replace("/", "%2F")))
     if len(params_to_sign) > 0:
         return canonicalized + "?" + "&".join(params_to_sign)
     return canonicalized
