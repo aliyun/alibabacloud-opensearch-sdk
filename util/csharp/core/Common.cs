@@ -187,7 +187,7 @@ namespace AlibabaCloud.OpenSearchUtil
                 queryPairsList.Add(key + "=" + valueStr);
             }
 
-            String queryPairsString = Join(queryPairsList,"&");
+            String queryPairsString = Join(queryPairsList, "&");
 
             if (queryPairsString.Length > 0)
             {
@@ -219,9 +219,7 @@ namespace AlibabaCloud.OpenSearchUtil
             }
 
             string encodeStr = stringBuilder.ToString()
-                .Replace("+", "%20")
-                .Replace("*", "%2A")
-                .Replace("~", "%7E");
+                .Replace("*", "%2A");
 
             return encodeStr;
         }

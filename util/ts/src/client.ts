@@ -7,7 +7,7 @@ import moment from 'moment';
 import crypto from 'crypto';
 
 function getSignedStr(request: $tea.Request, resource: string, accessKeySecret: string): string {
-  // Find out the "x-oss-"'s address in header of the request
+  // Find out the "x-opensearch-"'s address in header of the request
   var tmp: { [key: string]: string } = {};
   Object.keys(request.headers).forEach(key => {
     if (key.toLowerCase().startsWith('x-opensearch-')) {
@@ -16,10 +16,10 @@ function getSignedStr(request: $tea.Request, resource: string, accessKeySecret: 
   })
 
   const keys = Object.keys(tmp).sort();
-  // Get the canonicalizedOSSHeaders
-  let canonicalizedOSSHeaders = '';
+  // Get the canonicalizedHeaders
+  let canonicalizedHeaders = '';
   keys.forEach(key => {
-    canonicalizedOSSHeaders += `${key}:${tmp[key]}\n`;
+    canonicalizedHeaders += `${key}:${tmp[key]}\n`;
   });
 
   // Give other parameters values
@@ -27,7 +27,7 @@ function getSignedStr(request: $tea.Request, resource: string, accessKeySecret: 
   let date = request.headers['Date'];
   let contentType = request.headers['Content-Type'];
   let contentMd5 = request.headers['Content-MD5'];
-  let signStr = `${request.method}\n${contentMd5 || ''}\n${contentType}\n${date}\n${canonicalizedOSSHeaders}${resource}`;
+  let signStr = `${request.method}\n${contentMd5 || ''}\n${contentType}\n${date}\n${canonicalizedHeaders}${resource}`;
   const hmac = crypto.createHmac('sha1', accessKeySecret);
   hmac.update(signStr);
   let signedStr = hmac.digest('base64');
@@ -37,19 +37,20 @@ function getSignedStr(request: $tea.Request, resource: string, accessKeySecret: 
 function getSignature(request: $tea.Request, accessKeySecret: string): string {
   let resource = request.pathname;
   const keys = Object.keys(request.query);
-  if (resource.indexOf('?') === -1 && keys.length > 0) {
-    resource += '?';
-  }
+  var queryStrArray =[];
+  keys.sort();
   keys.forEach(key => {
     let value = request.query[key];
     if (typeof value === 'undefined' || value === null) {
       return;
     }
-    let valueStr = encodeURIComponent(value);
-    valueStr = valueStr.replace(/'/g, '%27');
-    resource += `${key}=${valueStr}&`;
+    let valueStr = encodeURIComponent(value).replace(/\(/g,"%28").replace(/\)/g,"%29").replace(/'/g, '%27').replace(/\*/g,"%2A").replace(/!/g,"%21");
+    queryStrArray.push(`${key}=${valueStr}`);
   })
-  return getSignedStr(request, resource.slice(0, -1), accessKeySecret)
+  if (queryStrArray.length > 0){
+    resource = resource+ '?'+ queryStrArray.join("&")
+  }
+  return getSignedStr(request, resource, accessKeySecret)
 }
 
 
@@ -92,7 +93,7 @@ export default class Client {
    * @return date string
    */
   static getDate(): string {
-    return moment().format('YYYY-MM-DDTHH:mm:ss\\Z');
+    return moment().utc().format('YYYY-MM-DD[T]HH:mm:ss[Z]');
   }
 
   /**
