@@ -37,18 +37,18 @@ function getSignedStr(request: $tea.Request, resource: string, accessKeySecret: 
 function getSignature(request: $tea.Request, accessKeySecret: string): string {
   let resource = request.pathname;
   const keys = Object.keys(request.query);
-  var queryStrArray =[];
+  var queryStrArray = [];
   keys.sort();
   keys.forEach(key => {
     let value = request.query[key];
     if (typeof value === 'undefined' || value === null) {
       return;
     }
-    let valueStr = encodeURIComponent(value).replace(/\(/g,"%28").replace(/\)/g,"%29").replace(/'/g, '%27').replace(/\*/g,"%2A").replace(/!/g,"%21");
+    let valueStr = encodeURIComponent(value).replace(/\(/g, '%28').replace(/\)/g, '%29').replace(/'/g, '%27').replace(/\*/g, '%2A').replace(/!/g, '%21');
     queryStrArray.push(`${key}=${valueStr}`);
   })
   if (queryStrArray.length > 0){
-    resource = resource+ '?'+ queryStrArray.join("&")
+    resource = resource + '?' + queryStrArray.join('&');
   }
   return getSignedStr(request, resource, accessKeySecret)
 }
