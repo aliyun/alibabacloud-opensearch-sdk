@@ -1,0 +1,33 @@
+{
+  "scope": "alibabacloud",
+  "name": "SearchRequestModelBuilder",
+  "version": "0.1.0",
+  "main": "./main.tea",
+  "libraries": {
+    "Util": "alibabacloud:Util:*",
+    "OpenSearchUtil": "alibabacloud:OpenSearchUtil:*"
+  },
+  "releases":{
+    "java": "com.aliyun:opensearch.search.searchrequestmodelbuilder:0.1.0",
+    "go": "github.com/alibabacloud-go/opensearch/search/searchrequestmodelbuilder:v0.1.0",
+    "csharp": "AlibabaCloud.SDK.OpenSearch.Search.SearchRequestModelBuilder:0.1.0",
+    "php": "alibabacloud/opensearch-searchrequestmodelbuilder:^0.1.0"
+  },
+  "java": {
+    "package": "com.aliyun.opensearch.search.searchrequestmodelbuilder",
+    "className": "SearchRequestModelBuilder"
+  },
+  "csharp": {
+    "namespace": "AlibabaCloud.SDK.OpenSearch.Search",
+    "className": "SearchRequestModelBuilder"
+  },
+  "php": {
+    "package": "AlibabaCloud.SDK.OpenSearch.Search",
+    "clientName": "SearchRequestModelBuilder",
+    "packageInfo": {
+      "name": "alibabacloud/SearchRequestModelBuilder",
+      "desc": "Alibaba Cloud OpenSearch SDK Library for PHP",
+      "github": "https://github.com/aliyun/alibabacloud-sdk"
+    }
+  }
+}
