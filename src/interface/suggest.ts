@@ -1,6 +1,8 @@
-export interface  SuggestQuery {
+export interface SuggestQuery {
   query: string;
   hit?: number;
+  user_id?: string;
+  re_search?: string;
 }
 
 export interface SuggestResponse {

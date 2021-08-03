@@ -23,6 +23,7 @@ export interface SearchResponse {
   status?: string;
   request_id?: string;
   result?: SearchResult;
+  ops_request_misc?: string;
   errors?: Error[];
 }
 

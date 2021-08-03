@@ -2,13 +2,13 @@ import Credential, * as $Credential from "@alicloud/credentials";
 import { Util } from "./util";
 import { SearchQuery, SearchResponse } from "./interface/search";
 import { SuggestQuery, SuggestResponse } from "./interface/suggest";
-import { Behavior } from "./interface/collect";
+import { CollectionFields, CollectionRes, CollectionType } from "./interface/collection";
 import { Document } from "./interface/document";
 import { HotQuery, HotResponse } from "./interface/hot";
 import { Config, Response } from "./interface/base";
 import axios, { AxiosRequestConfig, Method } from "axios";
 
-export * from "./interface/collect";
+export * from "./interface/collection";
 export * from "./interface/hot";
 export * from "./interface/document";
 export * from "./interface/search";
@@ -37,8 +37,8 @@ export class Client {
   }
 
   private async request<T>(method: Method, url: string, options: Pick<AxiosRequestConfig, "params" | "data">): Promise<T> {
-    let accessKeyId = await this.#credential.getAccessKeyId();
-    let accessKeySecret = await this.#credential.getAccessKeySecret();
+    const accessKeyId = await this.#credential.getAccessKeyId();
+    const accessKeySecret = await this.#credential.getAccessKeySecret();
 
     const { params = {}, data } = options;
     const conf: AxiosRequestConfig = {
@@ -76,7 +76,6 @@ export class Client {
       search.fetch_fields = fetch_fields.join(";");
     }
 
-    console.log(search);
     return this.request<SearchResponse>("GET", `/v3/openapi/apps/${this.#appName}/search`, { params: search });
   }
 
@@ -125,14 +124,12 @@ export class Client {
   /*
    * 为了给客户提供更高质量的搜索效果，OpenSearch目前支持客户通过server端上传点击数据。
    */
-  async collectDataEx(collectorName: string, data: Behavior): Promise<Response> {
-    return this.request<Response>("POST", `/v3/openapi/app-groups/${this.#appName}/data-collections/${collectorName}/actions/bulk`, { data });
-  }
+  async collection(type: CollectionType, docs: CollectionFields[]): Promise<CollectionRes> {
+    const data = docs.map(fields => {
+      fields.trace_id = fields.trace_id || "Alibaba";
+      return { cmd: "ADD", fields };
+    });
 
-  /*
-   * 为了给客户提供更高质量的搜索效果，OpenSearch目前支持客户通过server端上传点击数据。
-   */
-  async collectData(collectorName: string, data: Behavior): Promise<Response> {
-    return this.collectDataEx(collectorName, data);
+    return this.request<CollectionRes>("POST", `/v3/openapi/app-groups/${this.#appName}/data-collections/${this.#appName}/data-collection-type/${type}/actions/bulk`, { data });
   }
 }

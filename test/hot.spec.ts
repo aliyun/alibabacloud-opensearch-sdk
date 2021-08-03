@@ -13,8 +13,8 @@ describe("hot", () => {
     };
     const client = new Client(config);
     const query: HotQuery = {
-      userId: "1",
-      modelName: "Goods"
+      user_id: "1",
+      model_name: "Goods"
     };
     const body = await client.hot(query);
     assert.hasAllKeys(body, ["request_id", "searchtime", "result"]);

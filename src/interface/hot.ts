@@ -1,8 +1,8 @@
 export interface HotQuery {
   hit?: number;
-  userId?: string;
-  sortType?: string;
-  modelName?: string;
+  user_id?: string;
+  sort_type?: string;
+  model_name?: string;
 }
 
 export interface HotResponse {
