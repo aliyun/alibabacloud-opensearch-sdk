@@ -7,7 +7,7 @@
 		"go": "github.com/alibabacloud-go/opensearch-util/service:v1.0.0",
 		"csharp": "AlibabaCloud.OpenSearchUtil:0.0.1",
 		"ts": "@alicloud/opensearch-util:^1.0.0",
-		"java": "com.aliyun:opensearch-util:0.0.1",
+		"java": "com.aliyun:opensearchutil:0.0.1",
 		"php": "alibabacloud/opensearch-util:^0.1",
 		"python": "alibabacloud_opensearch_util:0.0.1"
 	},
