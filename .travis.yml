@@ -42,6 +42,11 @@ jobs:
       env: TEA_UTIL_ENV="go"
       install:
         - export GO111MODULE=on
+    - language: go
+      go: 1.16.x
+      env: TEA_UTIL_ENV="go"
+      install:
+        - export GO111MODULE=on
     - language: node_js
       node_js: 12
       env: TEA_UTIL_ENV="ts"
@@ -59,6 +64,9 @@ jobs:
       env: TEA_UTIL_ENV="python"
     - language: python
       python: 3.8
+      env: TEA_UTIL_ENV="python"
+    - language: python
+      python: 3.9
       env: TEA_UTIL_ENV="python"
     
 

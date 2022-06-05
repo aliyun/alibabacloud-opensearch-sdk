@@ -1,0 +1,40 @@
+{
+  "name": "alibabacloud/opensearch-util",
+  "description": "Alibaba Cloud OpenSearch Util Library for PHP",
+  "type": "library",
+  "license": "Apache-2.0",
+  "authors": [],
+  "require": {
+    "php": ">5.5",
+    "alibabacloud/tea-roa-utils": "^0.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^4.8.35|^5.4.3",
+    "symfony/var-dumper": "^5.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "AlibabaCloud\\Tea\\OpenSearchUtil\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "AlibabaCloud\\Tea\\OpenSearchUtil\\Tests\\": "tests"
+    }
+  },
+  "scripts": {
+    "fixer": "php-cs-fixer fix ./",
+    "test": [
+      "@clearCache",
+      "./vendor/bin/phpunit --colors=always"
+    ],
+    "clearCache": "rm -rf cache/*"
+  },
+  "config": {
+    "sort-packages": true,
+    "preferred-install": "dist",
+    "optimize-autoloader": true
+  },
+  "prefer-stable": true,
+  "minimum-stability": "dev"
+}

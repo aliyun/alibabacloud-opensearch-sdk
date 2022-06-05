@@ -1,0 +1,59 @@
+/**
+ * This module used for OpenSearch SDK
+ */
+
+/**
+ * Append a string into a string arrat
+ * @example append(["a", "b"], "c") => ["a", "b", "c"]
+ * @param strings the string list
+ * @param item the string to be appended
+ * @return new array
+ */
+static function append(strings: [ string ], item: string): [ string ];
+
+/**
+ * get the map's keys
+ * @param m the map
+ * @return new array
+ */
+static function keys(m: map[string]any): [ string ];
+
+/**
+ * Join array elements with a spearator string.
+ * @example join(["a", "b"], ".") => "a.b"
+ * @param strings the string list
+ * @param separator the separator
+ * @return the joined string
+ */
+static function join(strings: [ string ], separator: string): string;
+
+/**
+ * Get date.
+ * @example 2006-01-02T15:04:05Z
+ * @return date string
+ */
+static function getDate(): string;
+
+/**
+ * Get signature with request, accesskeyId, accessKeySecret.
+ * @param request the object of tea request
+ * @param accessKeyId accesskey id
+ * @param accessKeySecret accesskey secret
+ * @return signature string
+ */
+static function getSignature(request: $Request, accessKeyId: string, accessKeySecret: string): string;
+
+/**
+ * Get content MD5.
+ * @param content the string which will be calculated
+ * @return md5 string
+ */
+static function getContentMD5(content: string): string;
+
+/**
+ * Splice origin into string with sep.
+ * @param origin the source map
+ * @param sep the spearator
+ * @return the spliced string
+ */
+static function mapToString(origin: map[string]string, sep: string): string;

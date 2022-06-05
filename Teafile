@@ -1,0 +1,52 @@
+{
+  "scope": "alibabacloud",
+  "name": "OpenSearch",
+  "version": "0.0.5",
+  "main": "./main.tea",
+  "maintainers": [
+    {
+      "name": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  ],
+  "libraries": {
+    "Util": "darabonba:Util:*",
+    "Credential": "alibabacloud:Credential:*",
+    "OpenSearchUtil": "alibabacloud:OpenSearchUtil:*"
+  },
+  "releases": {
+    "java": "com.aliyun:opensearch:0.0.1",
+    "go": "github.com/alibabacloud-go/opensearch/client:v1.0.0",
+    "csharp": "AlibabaCloud.SDK.OpenSearch:0.0.1",
+    "ts": "@alicloud/opensearch:^1.0.0",
+    "php": "alibabacloud/opensearch:^0.1.0",
+    "python": "alibabacloud_opensearch:0.0.1"
+  },
+  "csharp": {
+    "className": "Client",
+    "namespace": "AlibabaCloud.SDK.OpenSearch"
+  },
+  "php": {
+    "package": "AlibabaCloud.SDK.OpenSearch",
+    "clientName": "OpenSearch",
+    "packageInfo": {
+      "name": "alibabacloud/opensearch",
+      "desc": "Alibaba Cloud OpenSearch SDK Library for PHP",
+      "github": "https://github.com/aliyun/alibabacloud-sdk"
+    }
+  },
+  "java": {
+    "package": "com.aliyun.opensearch"
+  },
+  "python": {
+    "package": "alibabacloud_opensearch",
+    "clientName": "client",
+    "packageInfo": {
+      "name": "alibabacloud_opensearch",
+      "desc": "Alibaba Cloud Opensearch SDK Library for Python",
+      "github": "https://github.com/aliyun/alibabacloud-opensearch-sdk",
+      "author": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  }
+}

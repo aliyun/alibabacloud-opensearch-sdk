@@ -1,10 +1,17 @@
-node_modules
-lib
-types
-dist
+
+libraries
+.libraries.json
+ts/node_modules
+ts/dist
+go.sum
+
 .DS_Store
 coverage.out
 coverage.html
+
+**/csharp/**/bin/
+**/csharp/**/obj/
+**/csharp/**/.vs/
 
 .idea/
 target/
@@ -14,3 +21,5 @@ target/
 .settings/
 *.js
 yarn.lock
+
+python/**/__pycache__/
