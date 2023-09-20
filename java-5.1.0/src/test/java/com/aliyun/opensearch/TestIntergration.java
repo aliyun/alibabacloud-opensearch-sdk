@@ -29,8 +29,8 @@ import com.google.common.collect.Maps;
 public class TestIntergration {
 	private String appName = "myblog";
 	private String tableName = "blog_entries";
-	private String accesskey = "Z2S85EGADatXoHwG";
-	private String secret = "2q3e1lj5Dsx0ISsXhQM7Ad1FTbykdm";
+	private String accesskey = "your_access_key";
+	private String secret = "your_secret";
 	private String host = "http://opensearch-cn-corp.aliyuncs.com";
 
 	private OpenSearch openSearch;
@@ -50,8 +50,8 @@ public class TestIntergration {
 	public void testCreateApp() throws Exception {
 		//"http://10.101.86.24";
 		host = "http://opensearch-cn-beijing.aliyuncs.com";
-		accesskey = "LTAIswgathXC6AXv";
-		secret = "QKxVRlGhF0SjDKTo7tmcbXL2gicoW1";
+		accesskey = "your_access_key";
+		secret = "your_secret";
 		openSearch = new OpenSearch(accesskey, secret, host);
 		serviceClient = new OpenSearchClient(openSearch);
 

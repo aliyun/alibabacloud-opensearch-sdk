@@ -26,8 +26,8 @@ public class QuotaClientTest {
    */
   @Test
   public void testGetByAppName() {
-    String accesskey = "LTAIswgathXC6AXv";
-    String secret = "QKxVRlGhF0SjDKTo7tmcbXL2gicoW1";
+    String accesskey = "your_access_key";
+    String secret = "your_secret";
     String host = "http://opensearch-cn-beijing.aliyuncs.com";
 
     String appName = "MZ_Enh_JavaSdkTest_2";
@@ -57,8 +57,8 @@ public class QuotaClientTest {
    */
   @Test
   public void testGetByAppId() {
-    String accesskey = "LTAIswgathXC6AXv";
-    String secret = "QKxVRlGhF0SjDKTo7tmcbXL2gicoW1";
+    String accesskey = "your_access_key";
+    String secret = "your_secret";
     String host = "http://opensearch-cn-beijing.aliyuncs.com";
 
     String appId = "130013919";
@@ -88,8 +88,8 @@ public class QuotaClientTest {
    */
   @Test
   public void testGetByAppNameAndAppIdReturnSameResult() {
-    String accesskey = "LTAIswgathXC6AXv";
-    String secret = "QKxVRlGhF0SjDKTo7tmcbXL2gicoW1";
+    String accesskey = "your_access_key";
+    String secret = "your_secret";
     String host = "http://opensearch-cn-beijing.aliyuncs.com";
 
     String appName = "MZ_Enh_JavaSdkTest_2";
@@ -127,8 +127,8 @@ public class QuotaClientTest {
    */
   @Test
   public void testUpdateByAppName() {
-    final String ACCESSKEY = "LTAIswgathXC6AXv";
-    final String SECRET = "QKxVRlGhF0SjDKTo7tmcbXL2gicoW1";
+    final String ACCESSKEY = "your_access_key";
+    final String SECRET = "your_secret";
     final String HOST = "http://opensearch-cn-beijing.aliyuncs.com";
 
     final String APP_NAME = "MZ_Enh_JavaSdkTest_2";
@@ -159,8 +159,8 @@ public class QuotaClientTest {
    */
   @Test
   public void testUpdateByAppId() {
-    final String ACCESSKEY = "LTAIswgathXC6AXv";
-    final String SECRET = "QKxVRlGhF0SjDKTo7tmcbXL2gicoW1";
+    final String ACCESSKEY = "your_access_key";
+    final String SECRET = "your_secret";
     final String HOST = "http://opensearch-cn-beijing.aliyuncs.com";
 
     final String APP_ID = "130013919";

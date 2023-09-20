@@ -38,7 +38,7 @@ public class OpenSearchAuthenticationTest {
 	@Before
 	public void setUp() throws Exception {
 
-		secret = "ytE24oQRDSAv7mYUSZSlgYfngfaWjo";
+		secret = "bar";
 		expectContentsSign = "bfBdIYC8w+BGKVZZRlTm7MbT5TU=";
 
 		method = "POST";

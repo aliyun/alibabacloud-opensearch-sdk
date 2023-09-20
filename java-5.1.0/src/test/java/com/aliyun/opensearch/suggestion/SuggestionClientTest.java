@@ -30,8 +30,8 @@ public class SuggestionClientTest {
 
     @Test
     public void testSearchWithCustomParameters() {
-        final String ACCESSKEY = "LTAIswgathXC6AXv";
-        final String SECRET = "QKxVRlGhF0SjDKTo7tmcbXL2gicoW1";
+        final String ACCESSKEY = "your_access_key";
+        final String SECRET = "your_secret";
         final String HOST = "http://opensearch-cn-beijing.aliyuncs.com";
 
         final String APP_NAME = "test";
@@ -83,8 +83,8 @@ public class SuggestionClientTest {
 
     @Test
     public void testSearchWithDefaultParameters() {
-        final String ACCESSKEY = "LTAIswgathXC6AXv";
-        final String SECRET = "QKxVRlGhF0SjDKTo7tmcbXL2gicoW1";
+        final String ACCESSKEY = "your_access_key";
+        final String SECRET = "your_secret";
         final String HOST = "http://opensearch-cn-beijing.aliyuncs.com";
 
         final String APP_NAME = "test";

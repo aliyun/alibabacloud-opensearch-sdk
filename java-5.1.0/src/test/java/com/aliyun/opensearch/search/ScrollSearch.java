@@ -18,8 +18,8 @@ import com.google.common.collect.Lists;
 
 public class ScrollSearch {
 	private String appName = "twb_seller";
-	private String accesskey = "LTAIxPglG0w7IDIH";
-	private String secret = "H37oVyrZM0RrsTpuj2AikcAXuEOi94";
+	private String accesskey = "your_access_key";
+	private String secret = "your_secret";
 	private String host = "http://opensearch-cn-corp.aliyuncs.com";
 
 	public void testScroll() {

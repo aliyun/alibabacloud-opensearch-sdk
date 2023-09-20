@@ -31,8 +31,8 @@ public class SdkThriftServer {
 		if (args.length < 4) {
 			throw new RuntimeException("accessKey secret host port");
 		}
-		//String accessKey = "Z2S85EGADatXoHwG";
-		//String secret = "2q3e1lj5Dsx0ISsXhQM7Ad1FTbykdm";
+		//String accessKey = "your_access_key";
+		//String secret = "your_secret";
 		//String host = "http://106.11.30.131";
 
 		String accessKey = args[0];

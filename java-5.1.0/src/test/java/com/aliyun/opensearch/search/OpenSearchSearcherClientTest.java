@@ -65,8 +65,8 @@ public class OpenSearchSearcherClientTest {
 
 		appName = "myblog";
 		tableName = "blog_entries";
-		accesskey = "Z2S85EGADatXoHwG";
-		secret = "2q3e1lj5Dsx0ISsXhQM7Ad1FTbykdm";
+		accesskey = "your_access_key";
+		secret = "your_secret";
 		host = "http://opensearch-cn-corp.aliyuncs.com";
 		host = "http://internal1.api.aliyuncs.com";
 		OpenSearch opensearch = new OpenSearch(accesskey, secret, host);
@@ -105,8 +105,8 @@ public class OpenSearchSearcherClientTest {
 		appName1 = "MZ_Std_JavaSdkTest_1";
 		appName2 = "MZ_Std_JavaSdkTest_2";
 
-		accesskey = "yM4dDEe8M9sziald";
-		secret = "USCFVPjtPhQU2XOlh9tpT1jLmJ78SV";
+		accesskey = "your_access_key";
+		secret = "your_secret";
 		host = "http://opensearch-cn-corp.aliyuncs.com";
 
 		OpenSearch opensearch = new OpenSearch(accesskey, secret, host);
@@ -140,8 +140,8 @@ public class OpenSearchSearcherClientTest {
 
 		appName = "myblog";
 		tableName = "blog_entries";
-		accesskey = "Z2S85EGADatXoHwG";
-		secret = "2q3e1lj5Dsx0ISsXhQM7Ad1FTbykdm";
+		accesskey = "your_access_key";
+		secret = "your_secret";
 		host = "http://opensearch-cn-corp.aliyuncs.com";
 		host = "http://internal1.api.aliyuncs.com";
 		OpenSearch opensearch = new OpenSearch(accesskey, secret, host);
@@ -208,8 +208,8 @@ public class OpenSearchSearcherClientTest {
     public void testSearchWithAbtest() throws TException {
         String appName = "K_Enh_Abtest_1";
 
-        String accesskey = "LTAIswgathXC6AXv";
-        String secret = "QKxVRlGhF0SjDKTo7tmcbXL2gicoW1";
+        String accesskey = "your_access_key";
+        String secret = "your_secret";
         String host = "http://opensearch-test.aliyuncs.com";
 
         OpenSearch opensearch = new OpenSearch(accesskey, secret, host);
@@ -244,8 +244,8 @@ public class OpenSearchSearcherClientTest {
     public void testSearchWithUserId() throws TException {
         String appName = "K_Enh_Abtest_1";
 
-        String accesskey = "LTAIswgathXC6AXv";
-        String secret = "QKxVRlGhF0SjDKTo7tmcbXL2gicoW1";
+        String accesskey = "your_access_key";
+        String secret = "your_secret";
         String host = "http://opensearch-test.aliyuncs.com";
 
         String userId = "2001";
@@ -281,8 +281,8 @@ public class OpenSearchSearcherClientTest {
     public void testSearchWithRawQuery() throws TException {
         String appName = "K_Enh_Abtest_1";
 
-        String accesskey = "LTAIswgathXC6AXv";
-        String secret = "QKxVRlGhF0SjDKTo7tmcbXL2gicoW1";
+        String accesskey = "your_access_key";
+        String secret = "your_secret";
         String host = "http://opensearch-test.aliyuncs.com";
 
         String rawQuery = "连衣裙";
