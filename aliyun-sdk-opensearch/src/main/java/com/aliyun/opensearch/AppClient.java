@@ -12,10 +12,7 @@ import com.aliyun.opensearch.sdk.generated.commons.Pageable;
 import com.aliyun.opensearch.util.ThriftUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-/**
- * @deprecated
- */
-@Deprecated
+
 public class AppClient implements AppService.Iface {
     private static final Logger LOG = LoggerFactory.getLogger(AppClient.class);
 

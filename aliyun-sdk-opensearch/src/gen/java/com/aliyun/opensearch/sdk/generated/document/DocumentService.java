@@ -30,8 +30,6 @@ import java.util.BitSet;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import javax.annotation.Generated;
-
-import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,8 +40,6 @@ public class DocumentService {
   public interface Iface {
 
     public com.aliyun.opensearch.sdk.generated.commons.OpenSearchResult push(String docsJson, String appName, String tableName) throws com.aliyun.opensearch.sdk.generated.commons.OpenSearchException, com.aliyun.opensearch.sdk.generated.commons.OpenSearchClientException, org.apache.thrift.TException;
-
-    public com.aliyun.opensearch.sdk.generated.commons.OpenSearchResult push(JSONArray docsJsonArray, String appName, String tableName) throws com.aliyun.opensearch.sdk.generated.commons.OpenSearchException, com.aliyun.opensearch.sdk.generated.commons.OpenSearchClientException, org.apache.thrift.TException;
 
   }
 
@@ -77,12 +73,6 @@ public class DocumentService {
     {
       send_push(docsJson, appName, tableName);
       return recv_push();
-    }
-
-    public com.aliyun.opensearch.sdk.generated.commons.OpenSearchResult push(JSONArray docsJsonArray, String appName, String tableName) throws com.aliyun.opensearch.sdk.generated.commons.OpenSearchException, com.aliyun.opensearch.sdk.generated.commons.OpenSearchClientException, org.apache.thrift.TException
-    {
-        send_push(docsJsonArray.toString(), appName, tableName);
-        return recv_push();
     }
 
     public void send_push(String docsJson, String appName, String tableName) throws org.apache.thrift.TException
@@ -237,7 +227,7 @@ public class DocumentService {
 
       public AsyncMethodCallback<com.aliyun.opensearch.sdk.generated.commons.OpenSearchResult> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<com.aliyun.opensearch.sdk.generated.commons.OpenSearchResult>() {
+        return new AsyncMethodCallback<com.aliyun.opensearch.sdk.generated.commons.OpenSearchResult>() { 
           public void onComplete(com.aliyun.opensearch.sdk.generated.commons.OpenSearchResult o) {
             push_result result = new push_result();
             result.success = o;
@@ -263,7 +253,7 @@ public class DocumentService {
                         result.setEIsSet(true);
                         msg = result;
             }
-             else
+             else 
             {
               msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
               msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
@@ -378,11 +368,11 @@ public class DocumentService {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.DOCS_JSON, new org.apache.thrift.meta_data.FieldMetaData("docsJson", org.apache.thrift.TFieldRequirementType.DEFAULT,
+      tmpMap.put(_Fields.DOCS_JSON, new org.apache.thrift.meta_data.FieldMetaData("docsJson", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-      tmpMap.put(_Fields.APP_NAME, new org.apache.thrift.meta_data.FieldMetaData("appName", org.apache.thrift.TFieldRequirementType.DEFAULT,
+      tmpMap.put(_Fields.APP_NAME, new org.apache.thrift.meta_data.FieldMetaData("appName", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-      tmpMap.put(_Fields.TABLE_NAME, new org.apache.thrift.meta_data.FieldMetaData("tableName", org.apache.thrift.TFieldRequirementType.DEFAULT,
+      tmpMap.put(_Fields.TABLE_NAME, new org.apache.thrift.meta_data.FieldMetaData("tableName", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(push_args.class, metaDataMap);
@@ -752,7 +742,7 @@ public class DocumentService {
         while (true)
         {
           schemeField = iprot.readFieldBegin();
-          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) {
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
             break;
           }
           switch (schemeField.id) {
@@ -760,7 +750,7 @@ public class DocumentService {
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.docsJson = iprot.readString();
                 struct.setDocsJsonIsSet(true);
-              } else {
+              } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
@@ -768,7 +758,7 @@ public class DocumentService {
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.appName = iprot.readString();
                 struct.setAppNameIsSet(true);
-              } else {
+              } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
@@ -776,7 +766,7 @@ public class DocumentService {
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.tableName = iprot.readString();
                 struct.setTableNameIsSet(true);
-              } else {
+              } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
@@ -946,11 +936,11 @@ public class DocumentService {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT,
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, com.aliyun.opensearch.sdk.generated.commons.OpenSearchResult.class)));
-      tmpMap.put(_Fields.ERROR, new org.apache.thrift.meta_data.FieldMetaData("error", org.apache.thrift.TFieldRequirementType.DEFAULT,
+      tmpMap.put(_Fields.ERROR, new org.apache.thrift.meta_data.FieldMetaData("error", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
-      tmpMap.put(_Fields.E, new org.apache.thrift.meta_data.FieldMetaData("e", org.apache.thrift.TFieldRequirementType.DEFAULT,
+      tmpMap.put(_Fields.E, new org.apache.thrift.meta_data.FieldMetaData("e", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(push_result.class, metaDataMap);
@@ -1324,7 +1314,7 @@ public class DocumentService {
         while (true)
         {
           schemeField = iprot.readFieldBegin();
-          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) {
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
             break;
           }
           switch (schemeField.id) {
@@ -1333,7 +1323,7 @@ public class DocumentService {
                 struct.success = new com.aliyun.opensearch.sdk.generated.commons.OpenSearchResult();
                 struct.success.read(iprot);
                 struct.setSuccessIsSet(true);
-              } else {
+              } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
@@ -1342,7 +1332,7 @@ public class DocumentService {
                 struct.error = new com.aliyun.opensearch.sdk.generated.commons.OpenSearchException();
                 struct.error.read(iprot);
                 struct.setErrorIsSet(true);
-              } else {
+              } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
@@ -1351,7 +1341,7 @@ public class DocumentService {
                 struct.e = new com.aliyun.opensearch.sdk.generated.commons.OpenSearchClientException();
                 struct.e.read(iprot);
                 struct.setEIsSet(true);
-              } else {
+              } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;

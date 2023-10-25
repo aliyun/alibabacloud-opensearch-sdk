@@ -57,8 +57,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.aliyun.opensearch.sdk.generated.OpenSearchConstants;
-import com.aliyun.opensearch.tracer.ClientTracer;
-import com.aliyun.opensearch.tracer.DefaultClientTracer;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
@@ -81,22 +79,6 @@ public class HttpClientFactory {
     private HttpParams params;
     private ScheduledExecutorService scheduledExeService;
     public PoolingClientConnectionManager connectionManager;
-
-    /**
-     * OpenSearchClient 请求监控
-     */
-    private ClientTracer clientTracer = new DefaultClientTracer();
-
-    /**
-     * 设置 OpenSearchClient 请求监控
-     */
-    public void setClientTracer(ClientTracer clientTracer) {
-        this.clientTracer = clientTracer;
-    }
-
-    public ClientTracer getClientTracer() {
-        return this.clientTracer;
-    }
 
     public HttpClientFactory(int timeout, int connectTimeout, int connections) {
         this(timeout, connectTimeout, connections, CLEAN_INIT_DELAY, clean_check_interval);
@@ -220,9 +202,6 @@ public class HttpClientFactory {
     private <T extends HttpRequestBase> HttpResult doPost(String reqURL, Map<String, String> headers,
                                                           String encoding,
                                                           T httpRequest) throws IOException {
-        // 请求开始
-        this.clientTracer.start(httpRequest.getMethod(), reqURL);
-
         httpRequest.setHeader("User-Agent", "opensearch/java sdk " + version);
         if (this.gzip) {
             httpRequest.setHeader("Accept-Encoding", "gzip");
@@ -238,36 +217,19 @@ public class HttpClientFactory {
         LOG.debug("--------------------------------");
         LOG.debug("httpRequest: " + httpRequest);
 
-        // 发送请求
-        this.clientTracer.send(httpRequest);
+        HttpResponse response = httpClient.execute(httpRequest);
+        validateResponse(response, httpRequest);
 
-        HttpResponse response;
+        HttpEntity entity = response.getEntity();
         String result = "";
-        try {
-            response = httpClient.execute(httpRequest);
-            validateResponse(response, httpRequest);
-
-            HttpEntity entity = response.getEntity();
-            if (null != entity) {
-                try {
-                    result = getResponseContent(entity, encoding);
-                } finally {
-                    HttpClientUtils.closeQuietly(response);
-                }
+        if (null != entity) {
+            try {
+                result = getResponseContent(entity, encoding);
+            } finally {
+                HttpClientUtils.closeQuietly(response);
             }
-        } catch (RuntimeException e) {
-            // 请求失败
-            this.clientTracer.fail();
-            throw e;
-        } catch (IOException e) {
-            // 请求失败
-            this.clientTracer.fail();
-            throw e;
+
         }
-
-        // 请求成功
-        this.clientTracer.success(response, result);
-
         StatusLine statusLine = response.getStatusLine();
         List<Header> requestHeaders = Lists.newArrayList(httpRequest.getAllHeaders());
         List<Header> responseHeaders = Lists.newArrayList(response.getAllHeaders());
@@ -302,9 +264,6 @@ public class HttpClientFactory {
     public HttpResult doGet(String url, Map<String, String> headers, String encoding, boolean isPB) throws IOException {
         LOG.debug("GET url: " + url);
         HttpGet httpget = new HttpGet(url);
-        // 请求开始
-        this.clientTracer.start(httpget.getMethod(), url);
-
         httpget.setHeader("User-Agent", "opensearch/java sdk " + version);
         if (this.gzip) {
             httpget.setHeader("Accept-Encoding", "gzip");
@@ -319,36 +278,18 @@ public class HttpClientFactory {
         LOG.debug("--------------------------------");
         LOG.debug(httpget.toString());
 
-        // 发送请求
-        this.clientTracer.send(httpget);
+        HttpResponse response = httpClient.execute(httpget);
+        validateResponse(response, httpget);
 
-        HttpResponse response;
+        HttpEntity entity = response.getEntity();
         String result = "";
-        try {
-            response = httpClient.execute(httpget);
-            validateResponse(response, httpget);
-
-            HttpEntity entity = response.getEntity();
-            if (null != entity) {
-                try {
-                    result = getGetResponseContent(entity, encoding, isPB);
-                } finally {
-                    HttpClientUtils.closeQuietly(response);
-                }
+        if (null != entity) {
+            try {
+                result = getGetResponseContent(entity, encoding, isPB);
+            } finally {
+                HttpClientUtils.closeQuietly(response);
             }
-        } catch (RuntimeException e) {
-            // 请求失败
-            this.clientTracer.fail();
-            throw e;
-        } catch (IOException e) {
-            // 请求失败
-            this.clientTracer.fail();
-            throw e;
         }
-
-        // 请求成功
-        this.clientTracer.success(response, result);
-
         StatusLine statusLine = response.getStatusLine();
         List<Header> requestHeaders = Lists.newArrayList(httpget.getAllHeaders());
         List<Header> responseHeaders = Lists.newArrayList(response.getAllHeaders());

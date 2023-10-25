@@ -49,13 +49,4 @@ public class SearchingSubClausesBuilder extends AbstractSubClausesBuilder {
 		return super.getDefaultKVpairsClause();
 	}
 
-    @Override
-    Optional<String> buildFinalDistinctClause() {
-        return super.getDefaultFinalDistinctClause();
-    }
-
-    @Override
-    Optional<String> buildCustomClauses() {
-        return super.getDefaultCustomClauses();
-    }
 }

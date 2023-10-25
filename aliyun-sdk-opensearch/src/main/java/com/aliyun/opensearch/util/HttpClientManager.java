@@ -22,80 +22,61 @@ package com.aliyun.opensearch.util;
 import java.io.IOException;
 import java.util.Map;
 
-import com.aliyun.opensearch.tracer.ClientTracer;
-
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 
 public class HttpClientManager {
 
-    private HttpClientFactory httpClientFactory;
+	private static HttpClientFactory httpClientFactory = new HttpClientFactory(0, 0, 0);
 
-    public HttpClientManager() {
-        httpClientFactory = new HttpClientFactory(0, 0, 0);
-    }
+	public static PoolingClientConnectionManager getConnectionManager() {
+		return httpClientFactory.connectionManager;
+	}
 
-    /**
-     * 设置 OpenSearchClient 请求监控
-     */
-    public void setClientTracer(ClientTracer clientTracer) {
-        httpClientFactory.setClientTracer(clientTracer);
-    }
-    /**
-     * 获取 OpenSearchClient 请求监控
-     */
-    public ClientTracer getClientTracer() {
-        return httpClientFactory.getClientTracer();
-    }
+	//设置连接池最大连接数
+	public static void setMaxConnections(int maxConnections) {
+		if (maxConnections > 0 && maxConnections != httpClientFactory.getMaxConnections()) {
+			if (httpClientFactory != null) {
+				httpClientFactory.shutdownIdleConnectionMonitor();
+			}
+			httpClientFactory = new HttpClientFactory(0, 0, maxConnections);
+		}
+	}
 
-    public PoolingClientConnectionManager getConnectionManager() {
-        return httpClientFactory.connectionManager;
-    }
+	//设置超时时间
+	public static void setTimeout(int timeout) {
+		httpClientFactory.setTimeOut(timeout);
+	}
 
-    //设置连接池最大连接数
-    public void setMaxConnections(int maxConnections) {
-        if (maxConnections > 0 && maxConnections != httpClientFactory.getMaxConnections()) {
-            if (httpClientFactory != null) {
-                httpClientFactory.shutdownIdleConnectionMonitor();
-            }
-            httpClientFactory = new HttpClientFactory(0, 0, maxConnections);
-        }
-    }
+	public static void enableGzip() {
+		httpClientFactory.enableGzip();
+	}
 
-    //设置超时时间
-    public void setTimeout(int timeout) {
-        httpClientFactory.setTimeOut(timeout);
-    }
+	//设置连接超时时间
+	public static void setConnectTimeout(int connectTimeout) {
+		httpClientFactory.setConnectTimeout(connectTimeout);
+	}
 
-    public void enableGzip() {
-        httpClientFactory.enableGzip();
-    }
+	public static HttpResult doPost(String requestPath, Map<String, String> headers,
+									String body, String encoding) throws IOException {
+		return httpClientFactory.doPost(requestPath, headers, body, encoding);
+	}
 
-    //设置连接超时时间
-    public void setConnectTimeout(int connectTimeout) {
-        httpClientFactory.setConnectTimeout(connectTimeout);
-    }
+	public static HttpResult doPatch(String requestPath, Map<String, String> headers,
+									 String body, String encoding) throws IOException {
+		return httpClientFactory.doPatch(requestPath, headers, body, encoding);
+	}
 
-    public HttpResult doPost(String requestPath, Map<String, String> headers,
-                                    String body, String encoding) throws IOException {
-        return httpClientFactory.doPost(requestPath, headers, body, encoding);
-    }
+	public static HttpResult doDelete(String requestPath, Map<String, String> headers,
+									  String encoding) throws IOException {
+		return httpClientFactory.doDelete(requestPath, headers, encoding);
+	}
 
-    public HttpResult doPatch(String requestPath, Map<String, String> headers,
-                                     String body, String encoding) throws IOException {
-        return httpClientFactory.doPatch(requestPath, headers, body, encoding);
-    }
+	public static HttpResult doGet(String url, Map<String, String> headers, String encoding, boolean isPB) throws IOException {
+		return httpClientFactory.doGet(url, headers, encoding, isPB);
+	}
 
-    public HttpResult doDelete(String requestPath, Map<String, String> headers,
-                                      String encoding) throws IOException {
-        return httpClientFactory.doDelete(requestPath, headers, encoding);
-    }
-
-    public HttpResult doGet(String url, Map<String, String> headers, String encoding, boolean isPB) throws IOException {
-        return httpClientFactory.doGet(url, headers, encoding, isPB);
-    }
-
-    public HttpResult doPut(String requestPath, Map<String, String> headers,
-                                   String body, String encoding) throws IOException {
-        return httpClientFactory.doPut(requestPath, headers, body, encoding);
-    }
+	public static HttpResult doPut(String requestPath, Map<String, String> headers,
+	        String body, String encoding) throws IOException {
+	    return httpClientFactory.doPut(requestPath, headers, body, encoding);
+	}
 }

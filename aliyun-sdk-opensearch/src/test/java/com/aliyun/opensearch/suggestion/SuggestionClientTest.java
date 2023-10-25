@@ -34,14 +34,13 @@ public class SuggestionClientTest {
         final String SECRET = "your_secret";
         final String HOST = "http://opensearch-cn-beijing.aliyuncs.com";
 
-        final String APP_NAME = "test";
         final String SUGGESTION_NAME = "mz6";
         final String QUERY = "香"; // "香蕉"
         final byte HITS = 8;
 
         final OpenSearch opensearch = new OpenSearch(ACCESSKEY, SECRET, HOST);
         final OpenSearchClient serviceClient = new OpenSearchClient(opensearch);
-        final SuggestionClient suggestionClient = new SuggestionClient(APP_NAME, SUGGESTION_NAME, serviceClient);
+        final SuggestionClient suggestionClient = new SuggestionClient(SUGGESTION_NAME, serviceClient);
 
         suggestionClient.setQuery(QUERY);
         suggestionClient.setHits(HITS);
@@ -87,12 +86,11 @@ public class SuggestionClientTest {
         final String SECRET = "your_secret";
         final String HOST = "http://opensearch-cn-beijing.aliyuncs.com";
 
-        final String APP_NAME = "test";
         final String SUGGESTION_NAME = "mz6";
 
         final OpenSearch opensearch = new OpenSearch(ACCESSKEY, SECRET, HOST);
         final OpenSearchClient serviceClient = new OpenSearchClient(opensearch);
-        final SuggestionClient suggestionClient = new SuggestionClient(APP_NAME, SUGGESTION_NAME, serviceClient);
+        final SuggestionClient suggestionClient = new SuggestionClient(SUGGESTION_NAME, serviceClient);
 
         suggestionClient.setQuery("香");
 

@@ -54,7 +54,7 @@ public class UrlParamsBuilderTest {
     @Test
     @UseDataProvider("setHitsDataProvider")
     public void setHits(int hits, int expected) {
-        String paramKey = "hit";
+        String paramKey = "hits";
 
         // Directly
         UrlParamsBuilder urlParamsBuilder = new UrlParamsBuilder();
@@ -100,8 +100,7 @@ public class UrlParamsBuilderTest {
     @DataProvider
     public static Object[][] setReSearchDataProvider() {
         return new Object[][] {
-            {ReSearch.HOMONYM, "homonym"},
-            {ReSearch.DISABLE, "disable"},
+            {ReSearch.HOMONY, "homony"},
             {null, null}
         };
     }

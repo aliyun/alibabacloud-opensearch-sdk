@@ -64,12 +64,6 @@ public class OpenSearchSearcherConstants {
 
   public static final String DISTINCT_CLAUSE_GRADE = "grade";
 
-  public static final String DISTINCT_CLAUSE_DIST_TYPE = "dist_type";
-
-  public static final String DISTINCT_CLAUSE_DIST_SORT = "dist_sort";
-
-  public static final String DISTINCT_CLAUSE_DIST_SPECIAL_COUNT = "dist_special_count";
-
   public static final String AGGREGATE_CLAUSE_GROUP_KEY = "group_key";
 
   public static final String AGGREGATE_CLAUSE_AGG_FUN = "agg_fun";

@@ -12,9 +12,9 @@ import com.aliyun.opensearch.suggest.UrlParamsBuilder;
 import com.aliyun.opensearch.util.Utils;
 
 public class SuggestionClient implements SuggestionService.Iface {
-  private static final String SUGGESTION_API_PATH = "/apps/{appName}/suggest/{suggestionName}/search";
+  private static final String SUGGESTION_API_PATH = "/suggestions/{suggestion_name}/actions/search";
   private OpenSearchClient client;
-  private String appName;
+  private static final String ROOT = "suggestions";
   private String suggestionName;
   private String query = "";
   private byte hits = 10;
@@ -24,12 +24,10 @@ public class SuggestionClient implements SuggestionService.Iface {
   /**
    * 构造函数
    *
-   * @param appName 应用名字
    * @param suggestionName 下拉提示名字
    * @param client CloudsearchClient实例
    */
-  public SuggestionClient(String appName, String suggestionName, OpenSearchClient client) {
-    this.appName = appName;
+  public SuggestionClient(String suggestionName, OpenSearchClient client) {
     this.suggestionName = suggestionName;
     this.client = client;
   }
@@ -101,24 +99,29 @@ public class SuggestionClient implements SuggestionService.Iface {
       UrlParamsBuilder urlParamsBuilder = new UrlParamsBuilder(suggestParams);
       Map<String, String> params = Utils.toMap(urlParamsBuilder.getHttpParams());
 
-      return doGet(parseApiPathTemplate(), params);
+      return doGet(suggestionName + "/actions/search", params);
   }
 
   @Override
   public SearchResult execute(SuggestParams suggestParams) throws OpenSearchException, OpenSearchClientException {
       UrlParamsBuilder urlParamsBuilder = new UrlParamsBuilder(suggestParams);
       Map<String, String> params = Utils.toMap(urlParamsBuilder.getHttpParams());
-      String requestPath = parseApiPathTemplate();
+      String requestPath = parseApiPathTemplate(suggestParams);
       String response = client.call(requestPath, params, OpenSearchClient.METHOD_GET);
       return new SearchResult(response);
   }
 
-  private String doGet(String requestPath, Map<String, String> params) throws OpenSearchClientException {
-      return client.call(requestPath, params, OpenSearchClient.METHOD_GET);
+  private String doGet(String identity, Map<String, String> params) throws OpenSearchClientException {
+      return client.call(createResourcePath(identity), params, OpenSearchClient.METHOD_GET);
   }
 
-  private String parseApiPathTemplate() {
-      return SUGGESTION_API_PATH.replace("{appName}", appName)
-          .replace("{suggestionName}", suggestionName);
+  private String createResourcePath(String identity) {
+    String path = String.format("/%s/%s", ROOT, identity);
+
+    return path;
+  }
+
+  private String parseApiPathTemplate(SuggestParams suggestParams) {
+      return SUGGESTION_API_PATH.replaceAll("\\{suggestion_name\\}", suggestionName);
   }
 }

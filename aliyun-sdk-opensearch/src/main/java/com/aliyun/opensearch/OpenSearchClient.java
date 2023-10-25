@@ -90,11 +90,7 @@ public class OpenSearchClient implements OpenSearchService.Iface {
      */
     private Authentication authentication;
 
-    private HttpClientManager httpClientManager;
-
     public OpenSearchClient(OpenSearch opensearch) {
-        this.httpClientManager = new HttpClientManager();
-
         this.host = opensearch.getHost();
         if (host == null || host.length() == 0) {
             throw new IllegalArgumentException("host not speicifed.");
@@ -111,16 +107,16 @@ public class OpenSearchClient implements OpenSearchService.Iface {
         }
 
         if (opensearch.isSetGzip() || opensearch.isGzip()) { // user set OR default(true)
-            this.httpClientManager.enableGzip();
+            HttpClientManager.enableGzip();
         }
 
         if (opensearch.getTimeout() > 0) {
-            this.httpClientManager.setTimeout(opensearch.getTimeout());
+            HttpClientManager.setTimeout(opensearch.getTimeout());
             timeout = opensearch.getTimeout();
         }
 
         if (opensearch.isSetConnectTimeout() && opensearch.getConnectTimeout() > 0) {
-            this.httpClientManager.setConnectTimeout(opensearch.getConnectTimeout());
+            HttpClientManager.setConnectTimeout(opensearch.getConnectTimeout());
         }
 
         if (opensearch.isSetExpired() && opensearch.isExpired()) {
@@ -128,9 +124,6 @@ public class OpenSearchClient implements OpenSearchService.Iface {
         }
     }
 
-    public HttpClientManager getHttpClientManager() {
-        return this.httpClientManager;
-    }
     public boolean isExpired() {
         return expired;
     }
@@ -163,7 +156,7 @@ public class OpenSearchClient implements OpenSearchService.Iface {
         }
 
         try {
-            TreeMap<String, String> opensearchHeaders = createOpenSearchHeaders(expiredTime);
+            TreeMap<String, String> opensearchHeaders = this.authentication.createOpenSearchHeaders(expiredTime);
             TreeMap<String, Object> signParameters = this.authentication.createSignParameters(method, request_path,
                 opensearchHeaders, params);
             String signature = this.authentication.createAliyunSign(signParameters);
@@ -181,24 +174,20 @@ public class OpenSearchClient implements OpenSearchService.Iface {
         }
     }
 
-    protected TreeMap<String, String> createOpenSearchHeaders(long expiredTime) {
-        return this.authentication.createOpenSearchHeaders(expiredTime);
-    }
-
     protected HttpResult doRequest(String url, Map<String, String> headers, Map<String,
         String> requestParams, String method, boolean isPB) throws IOException {
         HttpResult httpResult = new HttpResult();
         url = url + Utils.getHTTPParamsAsUrlStr(method, requestParams);
         if (method.equals(METHOD_POST)) {
-            httpResult = this.httpClientManager.doPost(url, headers, requestParams.get(POST_BODY_PARAM_KEY), ENCODE_UTF8);
+            httpResult = HttpClientManager.doPost(url, headers, requestParams.get(POST_BODY_PARAM_KEY), ENCODE_UTF8);
         } else if (method.equals(METHOD_GET)) {
-            httpResult = this.httpClientManager.doGet(url, headers, ENCODE_UTF8, isPB);
+            httpResult = HttpClientManager.doGet(url, headers, ENCODE_UTF8, isPB);
         } else if (method.equals(METHOD_DELETE)) {
-            httpResult = this.httpClientManager.doDelete(url, headers, ENCODE_UTF8);
+            httpResult = HttpClientManager.doDelete(url, headers, ENCODE_UTF8);
         } else if (method.equals(METHOD_PATCH)) {
-            httpResult = this.httpClientManager.doPatch(url, headers, requestParams.get(POST_BODY_PARAM_KEY), ENCODE_UTF8);
+            httpResult = HttpClientManager.doPatch(url, headers, requestParams.get(POST_BODY_PARAM_KEY), ENCODE_UTF8);
         } else if (method.equals(METHOD_PUT)) {
-            httpResult = this.httpClientManager.doPut(url, headers, requestParams.get(POST_BODY_PARAM_KEY), ENCODE_UTF8);
+            httpResult = HttpClientManager.doPut(url, headers, requestParams.get(POST_BODY_PARAM_KEY), ENCODE_UTF8);
         }
         return httpResult;
     }
