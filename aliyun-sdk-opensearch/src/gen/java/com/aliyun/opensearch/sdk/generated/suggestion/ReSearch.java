@@ -18,12 +18,7 @@ public enum ReSearch implements org.apache.thrift.TEnum {
   /**
    * 开启同音别字补全召回
    */
-  HOMONYM(0),
-
-    /**
-     * 关闭同音别字补全召回
-     */
-    DISABLE(1);
+  HOMONY(0);
 
   private final int value;
 
@@ -42,12 +37,10 @@ public enum ReSearch implements org.apache.thrift.TEnum {
    * Find a the enum type by its integer value, as defined in the Thrift IDL.
    * @return null if the value is not found.
    */
-  public static ReSearch findByValue(int value) {
+  public static ReSearch findByValue(int value) { 
     switch (value) {
       case 0:
-        return HOMONYM;
-        case 1:
-            return DISABLE;
+        return HOMONY;
       default:
         return null;
     }

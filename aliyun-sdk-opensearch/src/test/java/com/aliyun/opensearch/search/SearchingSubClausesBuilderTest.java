@@ -1,29 +1,32 @@
 package com.aliyun.opensearch.search;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import com.aliyun.opensearch.sdk.generated.search.*;
+import com.aliyun.opensearch.sdk.generated.search.Aggregate;
+import com.aliyun.opensearch.sdk.generated.search.Config;
+import com.aliyun.opensearch.sdk.generated.search.Distinct;
+import com.aliyun.opensearch.sdk.generated.search.Order;
+import com.aliyun.opensearch.sdk.generated.search.SearchFormat;
+import com.aliyun.opensearch.sdk.generated.search.SearchParams;
+import com.aliyun.opensearch.sdk.generated.search.Sort;
+import com.aliyun.opensearch.sdk.generated.search.SortField;
+import com.aliyun.opensearch.sdk.generated.search.Summary;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.tngtech.java.junit.dataprovider.DataProvider;
-import com.tngtech.java.junit.dataprovider.DataProviderRunner;
-import com.tngtech.java.junit.dataprovider.UseDataProvider;
 
 /**
  *
  * @author Ken
  */
-@RunWith(DataProviderRunner.class)
 public class SearchingSubClausesBuilderTest {
 
 	private SearchParams searchParams;
@@ -158,85 +161,4 @@ public class SearchingSubClausesBuilderTest {
 		}
 		return map;
 	}
-
-
-
-    @DataProvider
-    public static Object[][] finalDistinctCases() {
-        SearchParams searchParams = new SearchParams();
-        SearchParams param0 = searchParams.deepCopy();
-        String expected0 = null;
-
-        FinalDistinct finalDistinct = new FinalDistinct();
-        finalDistinct.setType(FinalDistinctType.FIELD_SHUFFLE);
-        finalDistinct.setKeyList(new ArrayList<FinalDistinctKey>() {{
-            add(new FinalDistinctKey("user_id", 2));
-            add(new FinalDistinctKey("category_id", 1));
-        }});
-        SearchParams param1 = searchParams.deepCopy();
-        FinalDistinct finalDistinct1 = finalDistinct.deepCopy();
-        param1.setFinalDistinct(finalDistinct1);
-        String expected1 = "final_distinct=dist_type:field_shuffle,dist_key:user_id;category_id"
-            + ",dist_count:2;1";
-
-        finalDistinct.setSort(new ArrayList<String>() {{
-            add("sales");
-            add("hot");
-        }});
-        SearchParams param2 = searchParams.deepCopy();
-        FinalDistinct finalDistinct2 = finalDistinct.deepCopy();
-        param2.setFinalDistinct(finalDistinct2);
-        String expected2 = expected1 + ",dist_sort:sales;hot";
-
-        finalDistinct.setSpecialCount(new HashMap<String, Integer>() {{
-            put("1", 2);
-            put("3", 2);
-        }});
-        SearchParams param3 = searchParams.deepCopy();
-        FinalDistinct finalDistinct3 = finalDistinct.deepCopy();
-        param3.setFinalDistinct(finalDistinct3);
-        String expected3 = expected2 + ",dist_special_count:1@2|3@2";
-
-        finalDistinct.setCustomFinalDistinct(new TreeMap<String, String>() {{
-            put("dist_foo", "foo");
-            put("dist_bar", "bar");
-        }});
-        searchParams.setFinalDistinct(finalDistinct);
-        String expected = expected3 + ",dist_bar:bar,dist_foo:foo";
-
-        return new Object[][] {
-            {param0, expected0},
-            {param1, expected1},
-            {param2, expected2},
-            {param3, expected3},
-            {searchParams, expected}
-        };
-    }
-
-    @Test
-    @UseDataProvider("finalDistinctCases")
-    public void getDefaultFinalDistinctClause(
-        SearchParams searchParams, String expected) {
-        SearchingSubClausesBuilder builder = new SearchingSubClausesBuilder(searchParams);
-        String actual = builder.getDefaultFinalDistinctClause().orNull();
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void getDefaultCustomClauses() {
-        SearchingSubClausesBuilder builder = new SearchingSubClausesBuilder(searchParams);
-        String actual = builder.getDefaultCustomClauses().orNull();
-        assertNull(actual);
-
-	    SearchParams searchParams = new SearchParams();
-        searchParams.setCustomClause(new TreeMap<String, String>() {{
-            put("clause_foo", "foo");
-            put("clause_bar", "bar");
-        }});
-
-	    String expected = "clause_bar=bar&&clause_foo=foo";
-	    builder = new SearchingSubClausesBuilder(searchParams);
-	    actual = builder.getDefaultCustomClauses().orNull();
-	    assertEquals(expected, actual);
-    }
 }

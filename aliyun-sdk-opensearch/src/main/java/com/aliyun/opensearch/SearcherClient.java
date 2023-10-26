@@ -37,8 +37,9 @@ public class SearcherClient implements OpenSearchSearcherService.Iface {
 	private static final String SEARCH_API_PATH = "/apps/{app_name}/search";
 
 	/** <p>请求API下拉提示部分的path</p>
+	 * <p> NOTE suggest API path: /v3/openapi/suggests/{app_name}/{suggest_name}/search </p>
 	 * */
-	private static final String SUGGEST_API_PATH = "/apps/{app_name}/suggest/{suggest_name}/search";
+	private static final String SUGGEST_API_PATH = "/suggests/{app_name}/{suggest_name}/search";
 
 	/**
 	 * 构造函数.

@@ -1,16 +1,42 @@
 package com.aliyun.opensearch.search;
 
+import static com.aliyun.opensearch.sdk.generated.search.OpenSearchSearcherConstants.AGGREGATE_CLAUSE_AGG_FILTER;
+import static com.aliyun.opensearch.sdk.generated.search.OpenSearchSearcherConstants.AGGREGATE_CLAUSE_AGG_FUN;
+import static com.aliyun.opensearch.sdk.generated.search.OpenSearchSearcherConstants.AGGREGATE_CLAUSE_AGG_SAMPLER_STEP;
+import static com.aliyun.opensearch.sdk.generated.search.OpenSearchSearcherConstants.AGGREGATE_CLAUSE_AGG_SAMPLER_THRESHOLD;
+import static com.aliyun.opensearch.sdk.generated.search.OpenSearchSearcherConstants.AGGREGATE_CLAUSE_GROUP_KEY;
+import static com.aliyun.opensearch.sdk.generated.search.OpenSearchSearcherConstants.AGGREGATE_CLAUSE_MAX_GROUP;
+import static com.aliyun.opensearch.sdk.generated.search.OpenSearchSearcherConstants.AGGREGATE_CLAUSE_RANGE;
+import static com.aliyun.opensearch.sdk.generated.search.OpenSearchSearcherConstants.CONFIG_CLAUSE_FORMAT;
+import static com.aliyun.opensearch.sdk.generated.search.OpenSearchSearcherConstants.CONFIG_CLAUSE_HIT;
+import static com.aliyun.opensearch.sdk.generated.search.OpenSearchSearcherConstants.CONFIG_CLAUSE_RERANK_SIZE;
+import static com.aliyun.opensearch.sdk.generated.search.OpenSearchSearcherConstants.CONFIG_CLAUSE_START;
+import static com.aliyun.opensearch.sdk.generated.search.OpenSearchSearcherConstants.DISTINCT_CLAUSE_DIST_COUNT;
+import static com.aliyun.opensearch.sdk.generated.search.OpenSearchSearcherConstants.DISTINCT_CLAUSE_DIST_FILTER;
+import static com.aliyun.opensearch.sdk.generated.search.OpenSearchSearcherConstants.DISTINCT_CLAUSE_DIST_KEY;
+import static com.aliyun.opensearch.sdk.generated.search.OpenSearchSearcherConstants.DISTINCT_CLAUSE_DIST_TIMES;
+import static com.aliyun.opensearch.sdk.generated.search.OpenSearchSearcherConstants.DISTINCT_CLAUSE_GRADE;
+import static com.aliyun.opensearch.sdk.generated.search.OpenSearchSearcherConstants.DISTINCT_CLAUSE_RESERVED;
+import static com.aliyun.opensearch.sdk.generated.search.OpenSearchSearcherConstants.DISTINCT_CLAUSE_UPDATE_TOTAL_HIT;
+import static com.aliyun.opensearch.sdk.generated.search.OpenSearchSearcherConstants.SORT_CLAUSE_DECREASE;
+import static com.aliyun.opensearch.sdk.generated.search.OpenSearchSearcherConstants.SORT_CLAUSE_INCREASE;
+
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import com.aliyun.opensearch.sdk.generated.search.*;
+import com.aliyun.opensearch.sdk.generated.search.Aggregate;
+import com.aliyun.opensearch.sdk.generated.search.Config;
+import com.aliyun.opensearch.sdk.generated.search.Distinct;
+import com.aliyun.opensearch.sdk.generated.search.Order;
+import com.aliyun.opensearch.sdk.generated.search.Rank;
+import com.aliyun.opensearch.sdk.generated.search.SearchFormat;
+import com.aliyun.opensearch.sdk.generated.search.SearchParams;
+import com.aliyun.opensearch.sdk.generated.search.Sort;
+import com.aliyun.opensearch.sdk.generated.search.SortField;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-
-import static com.aliyun.opensearch.sdk.generated.search.OpenSearchSearcherConstants.*;
 
 /**
  * Abstract SubClausesBuilder
@@ -39,9 +65,6 @@ public class AbstractSubClausesBuilder {
 
 	/** The Constant KVpairsClause. */
 	public static final String KVpairsClause = "kvpairs";
-
-    /** The Constant FinalDistinctClauseKey. */
-    public static final String FinalDistinctClauseKey = "final_distinct";
 
 	/** The original params. */
 	protected SearchParams params;
@@ -121,21 +144,7 @@ public class AbstractSubClausesBuilder {
 		return Optional.absent();
 	}
 
-    /**
-     * Build the final_distinct clause
-     */
-    Optional<String> buildFinalDistinctClause() {
-        return Optional.absent();
-    }
-
-    /**
-     * Build custom clauses
-     */
-    Optional<String> buildCustomClauses() {
-        return Optional.absent();
-    }
-
-    /**
+	/**
 	 * Gets the clauses string.
 	 *
 	 * @return the clauses string
@@ -149,8 +158,6 @@ public class AbstractSubClausesBuilder {
 		clauses.add(buildDistinctClause().orNull());
 		clauses.add(buildAggregateClause().orNull());
 		clauses.add(buildKVpairsClause().orNull());
-		clauses.add(buildFinalDistinctClause().orNull());
-		clauses.add(buildCustomClauses().orNull());
 		return Joiner.on("&&").skipNulls().join(clauses);
 	}
 
@@ -329,75 +336,7 @@ public class AbstractSubClausesBuilder {
 		return kVpairsClause;
 	}
 
-    /**
-     * Get the default distinct clause
-     */
-    Optional<String> getDefaultFinalDistinctClause() {
-        if (!params.isSetFinalDistinct()) {
-            return Optional.absent();
-        }
-
-        FinalDistinct finalDistinct = params.getFinalDistinct();
-
-        List<String> kvPairs = Lists.newArrayList();
-        append(kvPairs, DISTINCT_CLAUSE_DIST_TYPE, ":",
-            finalDistinct.getType().name().toLowerCase());
-
-        List<String> distKeyList = Lists.newArrayList();
-        List<String> distCountList = Lists.newArrayList();
-        for (FinalDistinctKey key : finalDistinct.getKeyList()) {
-            distKeyList.add(key.getKey());
-            distCountList.add(String.valueOf(key.getCount()));
-        }
-        String distKey = Joiner.on(";").join(distKeyList);
-        String distCount = Joiner.on(";").join(distCountList);
-        append(kvPairs, DISTINCT_CLAUSE_DIST_KEY, ":", distKey);
-        append(kvPairs, DISTINCT_CLAUSE_DIST_COUNT, ":", distCount);
-
-        if (finalDistinct.isSetSort()) {
-            String distSort = Joiner.on(";").join(finalDistinct.getSort());
-            append(kvPairs, DISTINCT_CLAUSE_DIST_SORT, ":", distSort);
-        }
-
-        if (finalDistinct.isSetSpecialCount()) {
-            List<String> specialCountList = Lists.newArrayList();
-            for (Map.Entry<String, Integer> entry : finalDistinct.getSpecialCount().entrySet()) {
-                StringBuilder specialCountBuilder = new StringBuilder();
-                specialCountBuilder.append(entry.getKey());
-                specialCountBuilder.append("@");
-                specialCountBuilder.append(entry.getValue());
-                specialCountList.add(specialCountBuilder.toString());
-            }
-            String distSpecialCount = Joiner.on("|").join(specialCountList);
-            append(kvPairs, DISTINCT_CLAUSE_DIST_SPECIAL_COUNT, ":", distSpecialCount);
-        }
-
-        if (finalDistinct.isSetCustomFinalDistinct()) {
-            for (Map.Entry<String, String> entry : finalDistinct.getCustomFinalDistinct().entrySet()) {
-                append(kvPairs, entry.getKey(), ":", entry.getValue());
-            }
-        }
-
-        StringBuilder queryClause = new StringBuilder(FinalDistinctClauseKey).append("=");
-        return Optional.of(queryClause.append(Joiner.on(",").join(kvPairs)).toString());
-    }
-
-    /**
-     * Get the default custom clause
-     */
-    Optional<String> getDefaultCustomClauses() {
-        if (!params.isSetCustomClause()) {
-            return Optional.absent();
-        }
-
-        List<String> clauses = Lists.newArrayList();
-        for (Map.Entry<String, String> entry : params.getCustomClause().entrySet()) {
-            append(clauses, entry.getKey(), "=", entry.getValue());
-        }
-        return Optional.of(Joiner.on("&&").join(clauses));
-    }
-
-    /**
+	/**
 	 * Creates the list of aggregate strings.
 	 *
 	 * @param aggregate

@@ -8,14 +8,16 @@ import com.aliyun.opensearch.sdk.generated.suggestion.SuggestParams;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.SyncBasicHttpParams;
 
-import static com.aliyun.opensearch.sdk.generated.suggestion.SuggestionConstants.*;
-
 /**
  * Query string builder for Suggest
  *
  * @author 隆宇 &lt;yanan.yn@alibaba-inc.com&gt;
  */
 public class UrlParamsBuilder {
+    private static final String QUERY       = "query";
+    private static final String HITS        = "hits";
+    private static final String USER_ID     = "user_id";
+    private static final String RE_SEARCH   = "re_search";
 
     /**
      * The http params.
@@ -32,15 +34,15 @@ public class UrlParamsBuilder {
     }
 
     public void setQuery(String query) {
-        httpParams.setParameter(PARAM_QUERY, query);
+        httpParams.setParameter(QUERY, query);
     }
 
     public void setHits(int hits) {
-        httpParams.setParameter(PARAM_HIT, hits);
+        httpParams.setParameter(HITS, hits);
     }
 
     public void setUserId(String userId) {
-        httpParams.setParameter(PARAM_USER_ID, userId);
+        httpParams.setParameter(USER_ID, userId);
     }
 
     public void setReSearch(ReSearch reSearchType) {
@@ -48,7 +50,7 @@ public class UrlParamsBuilder {
             return;
         }
         String value = reSearchType.toString().toLowerCase();
-        httpParams.setParameter(PARAM_RE_SEARCH, value);
+        httpParams.setParameter(RE_SEARCH, value);
     }
 
     public void setCustomParam(String key, String value) {

@@ -121,23 +121,6 @@ public class DocumentClient implements DocumentService.Iface {
     return doPush(docs, appName, tableName);
   }
 
-    /**
-     * 执行文档变更操作(3)
-     *
-     * 通过此接口可以直接将符合文档格式的多条数据直接推送到指定的表中
-     *
-     * @param docsJsonArray 多条文档
-     * @param appName 应用名
-     * @param tableName 操作的表名
-     * @return OpenSearchResult
-     * @throws OpenSearchException OpenSearchException
-     * @throws OpenSearchClientException OpenSearchClientException
-     */
-  @Override
-  public OpenSearchResult push(JSONArray docsJsonArray, String appName, String tableName) throws OpenSearchException, OpenSearchClientException {
-      return doPush(docsJsonArray, appName, tableName);
-  }
-
   private OpenSearchResult doPush(JSONArray jsonArray, String appName, String tableName) throws OpenSearchException, OpenSearchClientException {
     return resourceClient.post(createPushPath(appName, tableName), jsonArray.toString());
   }
