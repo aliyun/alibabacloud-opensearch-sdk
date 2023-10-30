@@ -76,7 +76,7 @@
                 <configuration>
                     <charset>UTF-8</charset>
                     <encoding>UTF-8</encoding>
-                    <skip>true</skip>
+                    <sourcepath>src/gen/java/,src/main/java/</sourcepath>
                 </configuration>
                 <executions>
                     <execution>
