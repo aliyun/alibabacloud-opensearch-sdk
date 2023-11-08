@@ -5,6 +5,7 @@
 import Util;
 import OpenSearchUtil;
 import Credential;
+import SearchRequestModelBuilder;
 
 type @endpoint = string
 type @protocol = string
@@ -60,7 +61,7 @@ model SearchQuery {
 
 model SearchRequestModel {
   headers?: map[string]string(description='headers', name='headers'),
-  query: SearchQuery(description='query', name='query')
+  query: SearchRequestModelBuilder(description='query', name='query')
 }
 
 model SearchResponseModel {
@@ -72,7 +73,9 @@ model SearchResponseModel {
  * 系统提供了丰富的搜索语法以满足用户各种场景下的搜索需求。
  */
 async function searchEx(appName: string, request: SearchRequestModel, runtime: Util.RuntimeOptions): SearchResponseModel {
-  return _request('GET', `/v3/openapi/apps/${appName}/search`, request.query, request.headers, null, runtime);
+  var paramsBuilder = request.query;
+  var params = paramsBuilder.build();
+  return _request('GET', `/v3/openapi/apps/${appName}/search`, params, request.headers, null, runtime);
 }
 
 /**
