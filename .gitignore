@@ -1,8 +1,10 @@
+
 libraries
 .libraries.json
 ts/node_modules
 ts/dist
 go.sum
+
 .DS_Store
 coverage.out
 coverage.html
@@ -17,5 +19,7 @@ target/
 .classpath
 .project
 .settings/
+*.js
+yarn.lock
 
 python/**/__pycache__/
