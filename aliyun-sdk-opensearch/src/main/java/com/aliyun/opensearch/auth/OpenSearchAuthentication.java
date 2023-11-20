@@ -122,9 +122,9 @@ public class OpenSearchAuthentication implements Authentication {
         signParameters.put("date", formatIso8601Date(new Date()));//
         signParameters.put("opensearch_headers", opensearch_headers);
 
-        if (method.equals(OpenSearchClient.METHOD_GET)) {
-            signParameters.put("query_params", sortedQueryParameters);
-        } else {
+        signParameters.put("query_params", sortedQueryParameters);
+
+        if (!method.equals(OpenSearchClient.METHOD_GET)) {
             if (params != null && !params.isEmpty()) {
                 String body = params.get(OpenSearchClient.POST_BODY_PARAM_KEY);
                 LOG.debug("BODY_CONTENT: ", body);
