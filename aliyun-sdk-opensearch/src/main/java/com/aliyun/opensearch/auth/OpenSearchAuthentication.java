@@ -255,6 +255,7 @@ public class OpenSearchAuthentication implements Authentication {
         });
         if (params != null) {
             sortedParameters.putAll(params);
+            sortedParameters.remove(OpenSearchClient.POST_BODY_PARAM_KEY);
         }
         return sortedParameters;
     }
