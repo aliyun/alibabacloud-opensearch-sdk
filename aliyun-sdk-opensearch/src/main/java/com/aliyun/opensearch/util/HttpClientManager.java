@@ -24,6 +24,7 @@ import java.util.Map;
 
 import com.aliyun.opensearch.tracer.ClientTracer;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 
 public class HttpClientManager {
@@ -80,9 +81,19 @@ public class HttpClientManager {
         return httpClientFactory.doPost(requestPath, headers, body, encoding);
     }
 
+    public HttpResponse doPostForHttpResponse(String requestPath, Map<String, String> headers,
+                                              String body, String encoding) throws IOException {
+        return httpClientFactory.doPostForHttpResponse(requestPath, headers, body, encoding);
+    }
+
     public HttpResult doPatch(String requestPath, Map<String, String> headers,
                                      String body, String encoding) throws IOException {
         return httpClientFactory.doPatch(requestPath, headers, body, encoding);
+    }
+
+    public HttpResponse doPatchForHttpResponse(String requestPath, Map<String, String> headers,
+                              String body, String encoding) throws IOException {
+        return httpClientFactory.doPatchForHttpResponse(requestPath, headers, body, encoding);
     }
 
     public HttpResult doDelete(String requestPath, Map<String, String> headers,
@@ -90,12 +101,26 @@ public class HttpClientManager {
         return httpClientFactory.doDelete(requestPath, headers, encoding);
     }
 
+    public HttpResponse doDeleteForHttpResponse(String requestPath, Map<String, String> headers,
+                               String encoding) throws IOException {
+        return httpClientFactory.doDeleteForHttpResponse(requestPath, headers, encoding);
+    }
+
     public HttpResult doGet(String url, Map<String, String> headers, String encoding, boolean isPB) throws IOException {
         return httpClientFactory.doGet(url, headers, encoding, isPB);
+    }
+
+    public HttpResponse doGetForHttpResponse(String url, Map<String, String> headers, String encoding, boolean isPB) throws IOException {
+        return httpClientFactory.doGetForHttpResponse(url, headers, encoding, isPB);
     }
 
     public HttpResult doPut(String requestPath, Map<String, String> headers,
                                    String body, String encoding) throws IOException {
         return httpClientFactory.doPut(requestPath, headers, body, encoding);
+    }
+
+    public HttpResponse doPutForHttpResponse(String requestPath, Map<String, String> headers,
+                            String body, String encoding) throws IOException {
+        return httpClientFactory.doPutForHttpResponse(requestPath, headers, body, encoding);
     }
 }
