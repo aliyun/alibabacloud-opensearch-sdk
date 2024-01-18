@@ -105,7 +105,11 @@ public class OpenSearchClient implements OpenSearchService.Iface {
     private CredentialsProvider credentialsProvider;
 
     public OpenSearchClient(OpenSearch opensearch) {
-        this(opensearch, null);
+        this(opensearch, new HttpClientManager());
+    }
+
+    public OpenSearchClient(OpenSearch opensearch, HttpClientManager httpClientManager) {
+        this(opensearch, null, httpClientManager);
 
         if (opensearch.isSetSecurityToken()) {
             this.authentication = new OpenSearchAuthentication(this.host, opensearch.getAccessKey(),
@@ -118,8 +122,12 @@ public class OpenSearchClient implements OpenSearchService.Iface {
     }
 
     public OpenSearchClient(OpenSearch opensearch, CredentialsProvider credentialsProvider) {
+        this(opensearch, credentialsProvider, new HttpClientManager());
+    }
+
+    public OpenSearchClient(OpenSearch opensearch, CredentialsProvider credentialsProvider, HttpClientManager httpClientManager) {
         this.credentialsProvider = credentialsProvider;
-        this.httpClientManager = new HttpClientManager();
+        this.httpClientManager = httpClientManager;
 
         this.host = opensearch.getHost();
         if (host == null || host.length() == 0) {

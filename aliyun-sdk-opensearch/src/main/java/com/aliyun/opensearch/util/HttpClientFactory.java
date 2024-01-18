@@ -465,11 +465,8 @@ public class HttpClientFactory {
         if (code >= HttpStatus.SC_BAD_REQUEST) {
             LOG.warn("Did not receive successful HTTP response: status code = {}, status message = {}",
                 status.getStatusCode(), status.getReasonPhrase());
-            try {
-                request.abort();
-            } catch (Throwable t) {
-                LOG.warn("failed to abort request", t);
-            }
+            // @隆宇 2024-1-15：对已经拿到响应结果的request调用`request.abort();`是没有意义的。
+            // 再去获取响应体时有概率会出现Socket Closed错误。
         }
     }
 
