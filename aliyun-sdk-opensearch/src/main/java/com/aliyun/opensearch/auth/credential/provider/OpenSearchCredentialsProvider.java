@@ -10,7 +10,7 @@ import com.aliyun.opensearch.sdk.generated.OpenSearch;
  * @author 隆宇
  */
 public class OpenSearchCredentialsProvider implements CredentialsProvider {
-    private StaticCredentialsProvider delegate;
+    private CredentialsProvider delegate;
 
     /**
      * 构造函数
@@ -18,7 +18,11 @@ public class OpenSearchCredentialsProvider implements CredentialsProvider {
      * @param openSearch {@link OpenSearch}通用配置对象
      */
     public OpenSearchCredentialsProvider(OpenSearch openSearch) {
-        delegate = new StaticCredentialsProvider(openSearch.getAccessKey(), openSearch.getSecret(), openSearch.getSecurityToken());
+        if (openSearch.isSetBearerToken()) {
+            delegate = new BearerTokenCredentialsProvider(openSearch.getBearerToken());
+        } else {
+            delegate = new StaticCredentialsProvider(openSearch.getAccessKey(), openSearch.getSecret(), openSearch.getSecurityToken());
+        }
     }
 
     @Override

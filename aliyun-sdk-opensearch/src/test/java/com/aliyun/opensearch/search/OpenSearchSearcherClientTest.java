@@ -3,8 +3,10 @@ package com.aliyun.opensearch.search;
 import static org.junit.Assert.*;
 
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.Map;
 
+import com.aliyun.opensearch.sdk.generated.commons.OpenSearchResult;
 import com.aliyun.opensearch.sdk.generated.search.*;
 import org.apache.thrift.TException;
 import org.junit.After;
@@ -54,6 +56,31 @@ public class OpenSearchSearcherClientTest {
 			assertTrue(e.getCause() instanceof UnknownHostException);
 		}
 	}
+
+    @Test
+    public void testRequestByBearerTokne() throws Exception {
+
+        String host = "host";
+        OpenSearch opensearch = new OpenSearch();
+        opensearch.setHost(host);
+        opensearch.setBearerToken("youer bearer token");
+        OpenSearchClient openSearchClient = new OpenSearchClient(opensearch);
+
+        String path = "/workspaces/default/text-embedding/ops-text-embedding-001";
+        Map<String, String> params = new HashMap<String, String>() {{
+            put("format", "full_json");
+            put("_POST_BODY", "{\n" +
+                "\n" +
+                "  \"input\":[\n" +
+                "    \"科学技术是第一生产力\",\"opensearch产品文档\"\n" +
+                "  ],\n" +
+                "  \"input_type\" : \"document\"\n" +
+                "}"
+            );
+        }};
+        OpenSearchResult openSearchResult = openSearchClient.callAndDecodeResult(path, params, "POST");
+        System.out.println(openSearchResult.getResult());
+    }
 
 	@Test
 	public void testSuggests() throws TException {

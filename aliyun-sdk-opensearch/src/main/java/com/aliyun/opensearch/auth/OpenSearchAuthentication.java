@@ -5,14 +5,8 @@ import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.SimpleTimeZone;
-import java.util.TreeMap;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -119,7 +113,7 @@ public class OpenSearchAuthentication implements Authentication {
         signParameters.put("request_path", request_path);
         signParameters.put("content_md5", content_md5);
         signParameters.put("content_type", "application/json; charset=utf-8");
-        signParameters.put("date", formatIso8601Date(new Date()));//
+        signParameters.put("date", formatIso8601Date(new Date()));
         signParameters.put("opensearch_headers", opensearch_headers);
 
         signParameters.put("query_params", sortedQueryParameters);

@@ -10,8 +10,10 @@ import java.util.function.Consumer;
 
 import com.aliyun.opensearch.auth.Authentication;
 import com.aliyun.opensearch.auth.OpenSearchAuthentication;
+import com.aliyun.opensearch.auth.credential.BearerTokenCredentials;
 import com.aliyun.opensearch.auth.credential.Credentials;
 import com.aliyun.opensearch.auth.credential.provider.CredentialsProvider;
+import com.aliyun.opensearch.auth.credential.provider.OpenSearchCredentialsProvider;
 import com.aliyun.opensearch.client.ErrorResult;
 import com.aliyun.opensearch.client.OpenSearchResponse;
 import com.aliyun.opensearch.client.OpenSearchResponseConsumer;
@@ -26,7 +28,6 @@ import com.aliyun.opensearch.util.HttpClientManager;
 import com.aliyun.opensearch.util.HttpResult;
 import com.aliyun.opensearch.util.JsonUtilWrapper;
 import com.aliyun.opensearch.util.Utils;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -109,16 +110,7 @@ public class OpenSearchClient implements OpenSearchService.Iface {
     }
 
     public OpenSearchClient(OpenSearch opensearch, HttpClientManager httpClientManager) {
-        this(opensearch, null, httpClientManager);
-
-        if (opensearch.isSetSecurityToken()) {
-            this.authentication = new OpenSearchAuthentication(this.host, opensearch.getAccessKey(),
-                opensearch.getSecret(), opensearch.getSecurityToken());
-        } else {
-            this.authentication = new OpenSearchAuthentication(this.host, opensearch.getAccessKey(),
-                opensearch.getSecret());
-        }
-        this.credentialsProvider = ((OpenSearchAuthentication)authentication).getCredentialsProvider();
+        this(opensearch,  new OpenSearchCredentialsProvider(opensearch), httpClientManager);
     }
 
     public OpenSearchClient(OpenSearch opensearch, CredentialsProvider credentialsProvider) {
@@ -273,6 +265,23 @@ public class OpenSearchClient implements OpenSearchService.Iface {
     }
 
     private Map<String, String> buildRequestHeaders(Map<String, String> params, String method, String request_path, String url) throws OpenSearchClientException {
+        Credentials credentials = credentialsProvider.getCredentials();
+        if (credentials instanceof BearerTokenCredentials) {
+            return buildBearerTokenRequestHeaders((BearerTokenCredentials)credentials);
+        } else {
+            return buildRequestHeaders(params, method, request_path, url, credentials);
+        }
+    }
+
+    private Map<String, String> buildBearerTokenRequestHeaders(BearerTokenCredentials credentials) {
+        Map<String, String> headers = new HashMap<>();
+        String authorization = "Bearer " + credentials.getBearerToken();
+        headers.put("Authorization", authorization);
+        headers.put("content-type", "application/json; charset=utf-8");
+        return headers;
+    }
+
+    private Map<String, String> buildRequestHeaders(Map<String, String> params, String method, String request_path, String url, Credentials credentials) throws OpenSearchClientException {
         Map<String, String> headers;
 
         long expiredTime = 0L;
@@ -281,7 +290,6 @@ public class OpenSearchClient implements OpenSearchService.Iface {
         }
 
         try {
-            Credentials credentials = credentialsProvider.getCredentials();
             TreeMap<String, String> opensearchHeaders = createOpenSearchHeaders(expiredTime, credentials);
             TreeMap<String, Object> signParameters = this.authentication.createSignParameters(method, request_path,
                 opensearchHeaders, params);
