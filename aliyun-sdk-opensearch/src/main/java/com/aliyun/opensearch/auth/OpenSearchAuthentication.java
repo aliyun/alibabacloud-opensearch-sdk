@@ -5,20 +5,19 @@ import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.SimpleTimeZone;
-import java.util.TreeMap;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.aliyun.opensearch.OpenSearchClient;
+import com.aliyun.opensearch.auth.credential.AccessKeyCredentials;
+import com.aliyun.opensearch.auth.credential.Credentials;
+import com.aliyun.opensearch.auth.credential.StsCredentials;
+import com.aliyun.opensearch.auth.credential.provider.CredentialsProvider;
+import com.aliyun.opensearch.auth.credential.provider.StaticCredentialsProvider;
 import com.aliyun.opensearch.util.Utils;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
@@ -41,11 +40,7 @@ public class OpenSearchAuthentication implements Authentication {
 
     private String baseURI;
 
-    private String accessKey;
-
-    private String secret;
-
-    private String securityToken = null;
+    private CredentialsProvider credentialsProvider;
 
     /**
      * Instantiates a new open search authentication.
@@ -55,9 +50,7 @@ public class OpenSearchAuthentication implements Authentication {
      * @param secret    用户阿里云网站中的secret,keyYype为ALIYUN使用 此信息阿里云网站中提供
      */
     public OpenSearchAuthentication(String baseURI, String accessKey, String secret) {
-        this.baseURI = baseURI;
-        this.accessKey = accessKey;
-        this.secret = secret;
+        this(baseURI, accessKey, secret, null);
     }
 
     /**
@@ -67,12 +60,22 @@ public class OpenSearchAuthentication implements Authentication {
      */
     public OpenSearchAuthentication(String baseURI, String accessKey, String secret,
                                     String securityToken) {
-        this(baseURI, accessKey, secret);
-        this.securityToken = securityToken;
+        this.baseURI = baseURI;
+        credentialsProvider = new StaticCredentialsProvider(accessKey, secret, securityToken);
+    }
+
+    public OpenSearchAuthentication(String baseURI, CredentialsProvider credentialsProvider) {
+        this.baseURI = baseURI;
+        this.credentialsProvider = credentialsProvider;
     }
 
     @Override
     public TreeMap<String, String> createOpenSearchHeaders(long expireTime) {
+        return createOpenSearchHeaders(expireTime, credentialsProvider.getCredentials());
+    }
+
+    @Override
+    public TreeMap<String, String> createOpenSearchHeaders(long expireTime, Credentials credentials) {
         TreeMap<String, String> opensearch_headers = new TreeMap<String, String>(new Comparator<String>() {
             @Override
             public int compare(String o1, String o2) {
@@ -85,8 +88,9 @@ public class OpenSearchAuthentication implements Authentication {
             opensearch_headers.put("X-Opensearch-Expire", String.valueOf(expireTime));
         }
 
-        if (securityToken != null) {
-            opensearch_headers.put("X-Opensearch-Security-Token", securityToken);
+        if (credentials instanceof StsCredentials) {
+            opensearch_headers.put("X-Opensearch-Security-Token",
+                ((StsCredentials)credentials).getSecurityToken());
         }
 
         return opensearch_headers;
@@ -109,7 +113,7 @@ public class OpenSearchAuthentication implements Authentication {
         signParameters.put("request_path", request_path);
         signParameters.put("content_md5", content_md5);
         signParameters.put("content_type", "application/json; charset=utf-8");
-        signParameters.put("date", formatIso8601Date(new Date()));//
+        signParameters.put("date", formatIso8601Date(new Date()));
         signParameters.put("opensearch_headers", opensearch_headers);
 
         signParameters.put("query_params", sortedQueryParameters);
@@ -127,6 +131,11 @@ public class OpenSearchAuthentication implements Authentication {
 
     @Override
     public String createAliyunSign(TreeMap<String, Object> sortMap) {
+        return createAliyunSign(sortMap, credentialsProvider.getCredentials());
+    }
+
+    @Override
+    public String createAliyunSign(TreeMap<String, Object> sortMap, Credentials credentials) {
         String method = (String)sortMap.get("method");
         String content_md5 = (String)sortMap.get("content_md5");
         String content_type = (String)sortMap.get("content_type");
@@ -141,9 +150,21 @@ public class OpenSearchAuthentication implements Authentication {
             request_path, query_params);
         LOG.debug("\n---------Content to sign: ----------\n", string_to_sign
             , "\n------------------------------------");
-        String signature = signature(string_to_sign, this.secret);
+
+        String signature = signature(string_to_sign, getAccessKeySecret(credentials));
         LOG.debug("signature: ", signature);
+
         return signature;
+    }
+
+    private static String getAccessKeySecret(Credentials credentials) {
+        AccessKeyCredentials accessKeyCredentials = (AccessKeyCredentials)credentials;
+        return accessKeyCredentials.getAccessKeySecret();
+    }
+
+    private static String getAccessKeyId(Credentials credentials) {
+        AccessKeyCredentials accessKeyCredentials = (AccessKeyCredentials)credentials;
+        return accessKeyCredentials.getAccessKeyId();
     }
 
     /**
@@ -198,15 +219,25 @@ public class OpenSearchAuthentication implements Authentication {
     @Override
     public Map<String, String> createHttpHeaders(TreeMap<String, String> opensearch_headers,
                                                  TreeMap<String, Object> signParameters, String signature) {
+        return createHttpHeaders(opensearch_headers, signParameters, signature, credentialsProvider.getCredentials());
+    }
+
+    public Map<String, String> createHttpHeaders(TreeMap<String, String> opensearch_headers,
+                                                 TreeMap<String, Object> signParameters, String signature,
+                                                 Credentials credentials) {
         Map<String, String> headers = Maps.newLinkedHashMap();
         headers.putAll(opensearch_headers);
         headers.put("Content-Type", (String)signParameters.get("content_type"));
         headers.put("Date", (String)signParameters.get("date"));
         headers.put("Accept-Language", "zh-cn");
         headers.put("Content-Md5", (String)signParameters.get("content_md5"));
-        String authorization = "OPENSEARCH " + this.accessKey + ":" + signature;
+        String authorization = "OPENSEARCH " + getAccessKeyId(credentials) + ":" + signature;
         headers.put("Authorization", authorization);
         return headers;
+    }
+
+    public CredentialsProvider getCredentialsProvider() {
+        return credentialsProvider;
     }
 
     private static TreeMap<String, String> sortParametersByKey(Map<String, String> params) {

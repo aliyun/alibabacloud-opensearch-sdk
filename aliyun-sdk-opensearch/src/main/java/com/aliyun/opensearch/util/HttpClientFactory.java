@@ -187,66 +187,77 @@ public class HttpClientFactory {
      */
     public HttpResult doPost(String reqURL, Map<String, String> headers, String body, String encoding)
         throws IOException {
+        return doPost(reqURL, headers, encoding, buildHttpPost(reqURL, body, encoding));
+    }
+
+    private HttpPost buildHttpPost(String reqURL, String body, String encoding) {
         HttpPost httpPost = new HttpPost(reqURL);
         if (!StringUtils.isEmpty(body)) {
             httpPost.setEntity(new StringEntity(body, encoding));
         }
-        return doPost(reqURL, headers, encoding, httpPost);
+        return httpPost;
+    }
+
+    public HttpResponse doPostForHttpResponse(String reqURL, Map<String, String> headers, String body, String encoding)
+        throws IOException {
+        return doPostForHttpResponse(reqURL, headers, encoding, buildHttpPost(reqURL, body, encoding));
     }
 
     public HttpResult doPut(String reqURL, Map<String, String> headers, String body, String encoding)
         throws IOException {
+        return doPost(reqURL, headers, encoding, buildHttpPut(reqURL, body, encoding));
+    }
+
+    private HttpPut buildHttpPut(String reqURL, String body, String encoding) {
         HttpPut httpPut = new HttpPut(reqURL);
         if (!StringUtils.isEmpty(body)) {
             httpPut.setEntity(new StringEntity(body, encoding));
         }
-        return doPost(reqURL, headers, encoding, httpPut);
+        return httpPut;
+    }
+    public HttpResponse doPutForHttpResponse(String reqURL, Map<String, String> headers, String body, String encoding)
+        throws IOException {
+        return doPostForHttpResponse(reqURL, headers, encoding, buildHttpPut(reqURL, body, encoding));
     }
 
     public HttpResult doPatch(String reqURL, Map<String, String> headers, String body, String encoding)
         throws IOException {
+        return doPost(reqURL, headers, encoding, buildHttpPatch(reqURL, body, encoding));
+    }
+
+    private HttpPatch buildHttpPatch(String reqURL, String body, String encoding) {
         HttpPatch httpPatch = new HttpPatch(reqURL);
         if (!StringUtils.isEmpty(body)) {
             httpPatch.setEntity(new StringEntity(body, encoding));
         }
-        return doPost(reqURL, headers, encoding, httpPatch);
+        return httpPatch;
+    }
+
+    public HttpResponse doPatchForHttpResponse(String reqURL, Map<String, String> headers, String body, String encoding)
+        throws IOException {
+        return doPostForHttpResponse(reqURL, headers, encoding, buildHttpPatch(reqURL, body, encoding));
     }
 
     public HttpResult doDelete(String reqURL, Map<String, String> headers, String encoding) throws IOException {
+        return doPost(reqURL, headers, encoding, buildHttpDelete(reqURL));
+    }
+
+    private HttpDelete buildHttpDelete(String reqURL) {
         HttpDelete httpDelete = new HttpDelete(reqURL);
-        return doPost(reqURL, headers, encoding, httpDelete);
+        return httpDelete;
+    }
+
+    public HttpResponse doDeleteForHttpResponse(String reqURL, Map<String, String> headers, String encoding) throws IOException {
+        return doPostForHttpResponse(reqURL, headers, encoding, buildHttpDelete(reqURL));
     }
 
     private <T extends HttpRequestBase> HttpResult doPost(String reqURL, Map<String, String> headers,
                                                           String encoding,
                                                           T httpRequest) throws IOException {
-        // 请求开始
-        this.clientTracer.start(httpRequest.getMethod(), reqURL);
+        HttpResponse response = doPostForHttpResponse(reqURL, headers, encoding, httpRequest);
 
-        httpRequest.setHeader("User-Agent", "opensearch/java sdk " + version);
-        if (this.gzip) {
-            httpRequest.setHeader("Accept-Encoding", "gzip");
-        }
-
-        for (Entry<String, String> header : headers.entrySet()) {
-            httpRequest.setHeader(header.getKey(), header.getValue());
-        }
-        LOG.debug("--------POST Headers: --------");
-        for (Header header : httpRequest.getAllHeaders()) {
-            LOG.debug(header.toString());
-        }
-        LOG.debug("--------------------------------");
-        LOG.debug("httpRequest: " + httpRequest);
-
-        // 发送请求
-        this.clientTracer.send(httpRequest);
-
-        HttpResponse response;
         String result = "";
         try {
-            response = httpClient.execute(httpRequest);
-            validateResponse(response, httpRequest);
-
             HttpEntity entity = response.getEntity();
             if (null != entity) {
                 try {
@@ -275,6 +286,53 @@ public class HttpClientFactory {
             requestHeaders, responseHeaders);
     }
 
+    /**
+     * 请求并获取HttpResponse对象
+     * <p>注意：执行过程中出现异常会调用{@link ClientTracer#fail()}方法。
+     * 正常返回不会调用{@link ClientTracer#success(HttpResponse, String)}。
+     * 调用者需要通过{@link #getClientTracer()}方法获取{@link ClientTracer}实例完成上述调用。</p>
+     */
+    private <T extends HttpRequestBase> HttpResponse doPostForHttpResponse(String reqURL, Map<String, String> headers,
+                                                          String encoding,
+                                                          T httpRequest) throws IOException {
+        // 请求开始
+        this.clientTracer.start(httpRequest.getMethod(), reqURL);
+
+        httpRequest.setHeader("User-Agent", "opensearch/java sdk " + version);
+        if (this.gzip) {
+            httpRequest.setHeader("Accept-Encoding", "gzip");
+        }
+
+        for (Entry<String, String> header : headers.entrySet()) {
+            httpRequest.setHeader(header.getKey(), header.getValue());
+        }
+        LOG.debug("--------POST Headers: --------");
+        for (Header header : httpRequest.getAllHeaders()) {
+            LOG.debug(header.toString());
+        }
+        LOG.debug("--------------------------------");
+        LOG.debug("httpRequest: " + httpRequest);
+
+        // 发送请求
+        this.clientTracer.send(httpRequest);
+
+        HttpResponse response;
+        try {
+            response = httpClient.execute(httpRequest);
+            validateResponse(response, httpRequest);
+        } catch (RuntimeException e) {
+            // 请求失败
+            this.clientTracer.fail();
+            throw e;
+        } catch (IOException e) {
+            // 请求失败
+            this.clientTracer.fail();
+            throw e;
+        }
+
+        return response;
+    }
+
     private String getResponseContent(HttpEntity entity, String encoding) throws IOException {
         Preconditions.checkNotNull(entity);
         final String responseContent;
@@ -300,34 +358,12 @@ public class HttpClientFactory {
      * @throws ClientProtocolException  ClientProtocolException
      */
     public HttpResult doGet(String url, Map<String, String> headers, String encoding, boolean isPB) throws IOException {
-        LOG.debug("GET url: " + url);
-        HttpGet httpget = new HttpGet(url);
-        // 请求开始
-        this.clientTracer.start(httpget.getMethod(), url);
+        HttpGetRequestResponse httpGetRequestResponse = doGetForHttpGetRequestResponse(url, headers, encoding, isPB);
+        HttpResponse response = httpGetRequestResponse.getHttpResponse();
+        HttpGet httpget = httpGetRequestResponse.getHttpGet();
 
-        httpget.setHeader("User-Agent", "opensearch/java sdk " + version);
-        if (this.gzip) {
-            httpget.setHeader("Accept-Encoding", "gzip");
-        }
-        for (Entry<String, String> header : headers.entrySet()) {
-            httpget.setHeader(header.getKey(), header.getValue());
-        }
-        LOG.debug("--------------- Get Headers: ---------------");
-        for (Header header : httpget.getAllHeaders()) {
-            LOG.debug(header.toString());
-        }
-        LOG.debug("--------------------------------");
-        LOG.debug(httpget.toString());
-
-        // 发送请求
-        this.clientTracer.send(httpget);
-
-        HttpResponse response;
         String result = "";
         try {
-            response = httpClient.execute(httpget);
-            validateResponse(response, httpget);
-
             HttpEntity entity = response.getEntity();
             if (null != entity) {
                 try {
@@ -356,6 +392,58 @@ public class HttpClientFactory {
             requestHeaders, responseHeaders);
     }
 
+    /**
+     * 请求并获取HttpResponse对象
+     * <p>注意：执行过程中出现异常会调用{@link ClientTracer#fail()}方法。
+     * 正常返回不会调用{@link ClientTracer#success(HttpResponse, String)}。
+     * 调用者需要通过{@link #getClientTracer()}方法获取{@link ClientTracer}实例完成上述调用。</p>
+     */
+    public HttpResponse doGetForHttpResponse(String url, Map<String, String> headers, String encoding, boolean isPB) throws IOException {
+        HttpGetRequestResponse httpGetRequestResponse
+            = doGetForHttpGetRequestResponse(url, headers, encoding, isPB);
+        return httpGetRequestResponse.getHttpResponse();
+    }
+
+    private HttpGetRequestResponse doGetForHttpGetRequestResponse(String url, Map<String, String> headers, String encoding, boolean isPB) throws IOException {
+        LOG.debug("GET url: " + url);
+        HttpGet httpget = new HttpGet(url);
+        // 请求开始
+        this.clientTracer.start(httpget.getMethod(), url);
+
+        httpget.setHeader("User-Agent", "opensearch/java sdk " + version);
+        if (this.gzip) {
+            httpget.setHeader("Accept-Encoding", "gzip");
+        }
+        for (Entry<String, String> header : headers.entrySet()) {
+            httpget.setHeader(header.getKey(), header.getValue());
+        }
+        LOG.debug("--------------- Get Headers: ---------------");
+        for (Header header : httpget.getAllHeaders()) {
+            LOG.debug(header.toString());
+        }
+        LOG.debug("--------------------------------");
+        LOG.debug(httpget.toString());
+
+        // 发送请求
+        this.clientTracer.send(httpget);
+
+        HttpResponse response;
+        try {
+            response = httpClient.execute(httpget);
+            validateResponse(response, httpget);
+        } catch (RuntimeException e) {
+            // 请求失败
+            this.clientTracer.fail();
+            throw e;
+        } catch (IOException e) {
+            // 请求失败
+            this.clientTracer.fail();
+            throw e;
+        }
+
+        return new HttpGetRequestResponse(httpget, response);
+    }
+
     private String getGetResponseContent(HttpEntity entity, String encoding, boolean isPB) throws IOException {
         String result = "";
         if (entity == null) {
@@ -377,11 +465,8 @@ public class HttpClientFactory {
         if (code >= HttpStatus.SC_BAD_REQUEST) {
             LOG.warn("Did not receive successful HTTP response: status code = {}, status message = {}",
                 status.getStatusCode(), status.getReasonPhrase());
-            try {
-                request.abort();
-            } catch (Throwable t) {
-                LOG.warn("failed to abort request", t);
-            }
+            // @隆宇 2024-1-15：对已经拿到响应结果的request调用`request.abort();`是没有意义的。
+            // 再去获取响应体时有概率会出现Socket Closed错误。
         }
     }
 
@@ -391,5 +476,23 @@ public class HttpClientFactory {
 
     public static void setCleanIdelConnCheckInterval(int checkInterval) {
         clean_check_interval = checkInterval;
+    }
+
+    static class HttpGetRequestResponse {
+        private HttpGet httpGet;
+        private HttpResponse httpResponse;
+
+        public HttpGetRequestResponse(HttpGet httpGet, HttpResponse httpResponse) {
+            this.httpGet = httpGet;
+            this.httpResponse = httpResponse;
+        }
+
+        public HttpGet getHttpGet() {
+            return httpGet;
+        }
+
+        public HttpResponse getHttpResponse() {
+            return httpResponse;
+        }
     }
 }
