@@ -1,0 +1,11 @@
+exit: true
+bail: true
+sort: true
+slow: 3000
+timeout: 0
+recursive: true
+require:
+  - ts-node/register
+  - test/env.ts
+extension:
+  - ts
