@@ -1,0 +1,17 @@
+2025-02-20 16:30:20,086 DEBUG [com.aliyun.opensearch.auth.OpenSearchAuthentication] - 
+---------Content to sign: ----------
+
+2025-02-20 16:30:20,099 DEBUG [com.aliyun.opensearch.auth.OpenSearchAuthentication] - signature: 
+2025-02-20 16:30:20,103 DEBUG [com.aliyun.opensearch.util.HttpClientFactory] - GET url: http://opensearch-cn-shanghai.aliyuncs.com/v3/openapi/apps/rag_test/rag?format=json&second_rank_type=expression&raw_query=%E4%B8%93%E4%B8%9A%E8%AF%8D%E5%85%B8&chat=%7B%22name%22%3A%22test%22%2C%22prompt_parameters%22%3A%7B%7D%7D&query=config%3Dstart%3A0%2Chit%3A10%2Crerank_size%3A200%2Cformat%3Ajson%26%26query%3D%27%27
+2025-02-20 16:30:20,106 DEBUG [com.aliyun.opensearch.util.HttpClientFactory] - --------------- Get Headers: ---------------
+2025-02-20 16:30:20,107 DEBUG [com.aliyun.opensearch.util.HttpClientFactory] - User-Agent: opensearch/java sdk v6.1.0
+2025-02-20 16:30:20,107 DEBUG [com.aliyun.opensearch.util.HttpClientFactory] - Accept-Encoding: gzip
+2025-02-20 16:30:20,107 DEBUG [com.aliyun.opensearch.util.HttpClientFactory] - X-Opensearch-Nonce: 31451427409112517861212
+2025-02-20 16:30:20,107 DEBUG [com.aliyun.opensearch.util.HttpClientFactory] - Content-Type: application/json; charset=utf-8
+2025-02-20 16:30:20,107 DEBUG [com.aliyun.opensearch.util.HttpClientFactory] - Date: 2025-02-20T08:30:20Z
+2025-02-20 16:30:20,107 DEBUG [com.aliyun.opensearch.util.HttpClientFactory] - Accept-Language: zh-cn
+2025-02-20 16:30:20,107 DEBUG [com.aliyun.opensearch.util.HttpClientFactory] - Content-Md5: 
+2025-02-20 16:30:20,107 DEBUG [com.aliyun.opensearch.util.HttpClientFactory] - Authorization: OPENSEARCH LTAI5tLCVWxkWWeEQURu2HbW:oTmkDnWzxhP0KHU8Bri5m9pNT5I=
+2025-02-20 16:30:20,107 DEBUG [com.aliyun.opensearch.util.HttpClientFactory] - Accept: text/event-stream
+2025-02-20 16:30:20,107 DEBUG [com.aliyun.opensearch.util.HttpClientFactory] - --------------------------------
+2025-02-20 16:30:20,108 DEBUG [com.aliyun.opensearch.util.HttpClientFactory] - GET http://opensearch-cn-shanghai.aliyuncs.com/v3/openapi/apps/rag_test/rag?format=json&second_rank_type=expression&raw_query=%E4%B8%93%E4%B8%9A%E8%AF%8D%E5%85%B8&chat=%7B%22name%22%3A%22test%22%2C%22prompt_parameters%22%3A%7B%7D%7D&query=config%3Dstart%3A0%2Chit%3A10%2Crerank_size%3A200%2Cformat%3Ajson%26%26query%3D%27%27 HTTP/1.1

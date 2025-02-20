@@ -20,6 +20,7 @@ public class OpenSearchResponse {
   private List<ErrorResult> errors;
   private Object result;
   private String tracer;
+  private Object chat;
 
   public OpenSearchResponse() {
   }
@@ -78,6 +79,21 @@ public class OpenSearchResponse {
     this.tracer = tracer;
   }
 
+  public Object getChat() {
+    return chat;
+  }
+
+  public void setChat(Object chat) {
+    this.chat = chat;
+  }
+
+  public String getChatString() {
+    if (chat != null) {
+      return this.chat.toString();
+    }
+    return "";
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -93,7 +109,10 @@ public class OpenSearchResponse {
       return false;
     if (getResult() != null ? !getResult().equals(that.getResult()) : that.getResult() != null)
       return false;
+    if (getChat() != null ? !getChat().equals(that.getChat()) : that.getChat() != null)
+      return false;
     return getTracer() != null ? getTracer().equals(that.getTracer()) : that.getTracer() == null;
+
 
   }
 
@@ -105,6 +124,7 @@ public class OpenSearchResponse {
             ", errors=" + errors +
             ", result=" + result +
             ", tracer='" + tracer + '\'' +
+            ", chat=" + chat +
             '}';
   }
 }

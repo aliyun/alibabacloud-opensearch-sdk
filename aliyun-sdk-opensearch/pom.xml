@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.aliyun.opensearch</groupId>
     <artifactId>aliyun-sdk-opensearch</artifactId>
-    <version>6.0.2</version>
+    <version>6.1.0</version>
     <packaging>jar</packaging>
     <name>Aliyun OPENSEARCH SDK for Java</name>
     <url>http://www.aliyun.com</url>

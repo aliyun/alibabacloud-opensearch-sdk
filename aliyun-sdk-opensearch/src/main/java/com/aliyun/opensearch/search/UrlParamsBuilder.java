@@ -1,14 +1,10 @@
 package com.aliyun.opensearch.search;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import com.aliyun.opensearch.sdk.generated.search.DeepPaging;
 import com.aliyun.opensearch.sdk.generated.search.Rank;
-import com.aliyun.opensearch.sdk.generated.search.RankType;
 import com.aliyun.opensearch.sdk.generated.search.SearchFormat;
 import com.aliyun.opensearch.sdk.generated.search.SearchParams;
 import com.aliyun.opensearch.sdk.generated.search.Summary;
@@ -19,6 +15,7 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.SyncBasicHttpParams;
+import org.json.JSONObject;
 
 import static com.aliyun.opensearch.sdk.generated.search.OpenSearchSearcherConstants.*;
 
@@ -89,6 +86,12 @@ public class UrlParamsBuilder {
     /** The Constant ABTEST. */
     private static final String ABTEST = "abtest";
 
+	/** The Constant CHAT. */
+    private static final String CHAT = "chat";
+    private static final String CHAT_NAME = "name";
+    private static final String CHAT_PROMPT_PARAMETERS = "prompt_parameters";
+	private static final String VALUE_SPLITTER_CHAT_KEYVALUE = ",";
+
 	/** The http params. */
 	private SyncBasicHttpParams httpParams;
 
@@ -132,6 +135,7 @@ public class UrlParamsBuilder {
         initAbtest(searchParams);
         initUserId(searchParams);
         initRawQuery(searchParams);
+		initChat(searchParams);
 	}
 
 	/**
@@ -359,6 +363,33 @@ public class UrlParamsBuilder {
             setRawQuery(searchParams.getRawQuery());
         }
     }
+
+	/**
+     * 初始化 chat 参数
+     *
+     * @param searchParams
+     */
+    private void initChat(SearchParams searchParams) {
+        if (searchParams.isSetChat()) {
+            Map<String, Object> chatParams = new HashMap();
+            if (searchParams.getChat().isSetName()) {
+                chatParams.put(CHAT_NAME, searchParams.getChat().getName());
+            }
+
+            if (searchParams.getChat().isSetPromptParameters()) {
+                chatParams.put(CHAT_PROMPT_PARAMETERS, searchParams.getChat().getPromptParameters());
+            }
+
+            if (!chatParams.isEmpty()) {
+                this.setChat(JSONObject.valueToString(chatParams));
+            }
+        }
+    }
+
+	private void setChat(String chatParams) {
+		httpParams.setParameter(CHAT, chatParams);
+	}
+
 
 	/**
 	 * Inits the route value.
