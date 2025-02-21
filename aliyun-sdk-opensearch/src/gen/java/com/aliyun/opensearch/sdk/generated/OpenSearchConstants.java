@@ -9,6 +9,6 @@ package com.aliyun.opensearch.sdk.generated;
 @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked", "unused"})
 public class OpenSearchConstants {
 
-  public static final String VERSION = "6.1.0";
+  public static final String VERSION = "6.2.0";
 
 }
