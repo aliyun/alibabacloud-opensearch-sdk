@@ -52,6 +52,9 @@ public class JsonUtilWrapper {
     if (jsonObject.has("result")) {
       openSearchResponse.setResult(jsonObject.get("result"));
     }
+    if (jsonObject.has("chat")) {
+      openSearchResponse.setChat(jsonObject.get("chat"));
+    }
     return openSearchResponse;
   }
 

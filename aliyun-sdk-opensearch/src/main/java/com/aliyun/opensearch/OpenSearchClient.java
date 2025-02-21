@@ -83,6 +83,12 @@ public class OpenSearchClient implements OpenSearchService.Iface {
      * 当前API的版本号。
      */
     private static final String version = "v3";
+    /**
+     * 流式输出结束标识符
+     */
+    private static final String END_OF_STREAM = "[done]";
+
+    public static final String CONTENT_TYPE_TEXT_EVENT_STREAM = "text/event-stream";
 
     /**
      * 请求的domain地址。
@@ -255,6 +261,8 @@ public class OpenSearchClient implements OpenSearchService.Iface {
         String request_path = buildRequestPath(path);
         String url = buildUrl(request_path);
         Map<String, String> headers = buildRequestHeaders(params, method, request_path, url);
+        // SSE输出添加特定header
+        headers.put("Accept", CONTENT_TYPE_TEXT_EVENT_STREAM);
 
         try {
             return doRequestForHttpResponse(url, headers, params, method, false);
@@ -383,6 +391,12 @@ public class OpenSearchClient implements OpenSearchService.Iface {
             openSearchException.setMessage(errorResult.getMessage());
             throw openSearchException;
         }
+
+        // 流式输出最后以 [done] 结束
+        if (END_OF_STREAM.equals(httpResult.getResult())) {
+            return new OpenSearchResult().setResult(END_OF_STREAM);
+        }
+
         try {
             openSearchResponse = JsonUtilWrapper.fromJson(httpResult.getResult());
         } catch (JSONException e) {
@@ -394,6 +408,9 @@ public class OpenSearchClient implements OpenSearchService.Iface {
         traceInfo.setTracer(openSearchResponse.getTracer());
         openSearchResult.setTraceInfo(traceInfo);
         openSearchResult.setResult(openSearchResponse.getResultString());
+        if (!StringUtils.isEmpty(openSearchResponse.getChatString())) {
+            openSearchResult.setChat(openSearchResponse.getChatString());
+        }
         return openSearchResult;
     }
 

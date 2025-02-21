@@ -2,12 +2,21 @@ package com.aliyun.opensearch.search;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.aliyun.opensearch.sdk.generated.commons.OpenSearchException;
 import com.aliyun.opensearch.sdk.generated.commons.OpenSearchResult;
 import com.aliyun.opensearch.sdk.generated.search.*;
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpResponse;
 import org.apache.thrift.TException;
 import org.junit.After;
 import org.junit.Before;
@@ -92,8 +101,8 @@ public class OpenSearchSearcherClientTest {
 
 		appName = "myblog";
 		tableName = "blog_entries";
-		accesskey = "your_access_key";
-		secret = "your_secret";
+		accesskey = "ak";
+		secret = "secret";
 		host = "http://opensearch-cn-corp.aliyuncs.com";
 		host = "http://internal1.api.aliyuncs.com";
 		OpenSearch opensearch = new OpenSearch(accesskey, secret, host);
@@ -132,8 +141,8 @@ public class OpenSearchSearcherClientTest {
 		appName1 = "MZ_Std_JavaSdkTest_1";
 		appName2 = "MZ_Std_JavaSdkTest_2";
 
-		accesskey = "your_access_key";
-		secret = "your_secret";
+		accesskey = "ak";
+		secret = "secret";
 		host = "http://opensearch-cn-corp.aliyuncs.com";
 
 		OpenSearch opensearch = new OpenSearch(accesskey, secret, host);
@@ -167,8 +176,8 @@ public class OpenSearchSearcherClientTest {
 
 		appName = "myblog";
 		tableName = "blog_entries";
-		accesskey = "your_access_key";
-		secret = "your_secret";
+		accesskey = "ak";
+		secret = "secret";
 		host = "http://opensearch-cn-corp.aliyuncs.com";
 		host = "http://internal1.api.aliyuncs.com";
 		OpenSearch opensearch = new OpenSearch(accesskey, secret, host);
@@ -235,8 +244,8 @@ public class OpenSearchSearcherClientTest {
     public void testSearchWithAbtest() throws TException {
         String appName = "K_Enh_Abtest_1";
 
-        String accesskey = "your_access_key";
-        String secret = "your_secret";
+        String accesskey = "ak";
+        String secret = "secret";
         String host = "http://opensearch-test.aliyuncs.com";
 
         OpenSearch opensearch = new OpenSearch(accesskey, secret, host);
@@ -271,8 +280,8 @@ public class OpenSearchSearcherClientTest {
     public void testSearchWithUserId() throws TException {
         String appName = "K_Enh_Abtest_1";
 
-        String accesskey = "your_access_key";
-        String secret = "your_secret";
+        String accesskey = "ak";
+        String secret = "secret";
         String host = "http://opensearch-test.aliyuncs.com";
 
         String userId = "2001";
@@ -308,8 +317,8 @@ public class OpenSearchSearcherClientTest {
     public void testSearchWithRawQuery() throws TException {
         String appName = "K_Enh_Abtest_1";
 
-        String accesskey = "your_access_key";
-        String secret = "your_secret";
+        String accesskey = "ak";
+        String secret = "secret";
         String host = "http://opensearch-test.aliyuncs.com";
 
         String rawQuery = "连衣裙";
@@ -335,4 +344,241 @@ public class OpenSearchSearcherClientTest {
 
         assertNotEquals(searchResult.getResult(), null);
     }
+
+    @Test
+    public void testSearch() {
+        String appName = "name";
+        String accesskey = "ak";
+        String secret = "secret";
+        String host = "http://opensearch-test.aliyuncs.com";
+
+        OpenSearch opensearch = new OpenSearch(accesskey, secret, host);
+		opensearch.setHost(host);
+		opensearch.setTimeout(90000);
+        OpenSearchClient openSearchClient = new OpenSearchClient(opensearch);
+        SearcherClient searcherClient = new SearcherClient(openSearchClient);
+
+        Config config = new Config(Lists.newArrayList(appName));
+		config.setHits(10);
+		config.setStart(0);
+        config.setSearchFormat(SearchFormat.findByValue(1));
+		config.setFetchFields(Arrays.asList("title", "description", "id"));
+        searchParams = new SearchParams(config);
+		searchParams.setQuery("default:'OpenSearch'");
+		searchParams.setRawQuery("OpenSearch");
+
+        try {
+			SearchResult searchResult = searcherClient.execute(searchParams);
+			System.out.println(searchResult.getResult());
+        } catch (OpenSearchClientException e) {
+            System.out.println("ErrorMessage=" + e.getMessage());
+        } catch (OpenSearchException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+	/**
+	 * SSE
+	 */
+	@Test
+	public void testExecuteForServerSentEvents() {
+		String appName = "name";
+        String accesskey = "ak";
+        String secret = "secret";
+        String host = "http://opensearch-test.aliyuncs.com";
+
+		OpenSearch opensearch = new OpenSearch(accesskey, secret, host);
+		opensearch.setHost(host);
+		opensearch.setTimeout(90000);
+		OpenSearchClient openSearchClient = new OpenSearchClient(opensearch);
+		SearcherClient searcherClient = new SearcherClient(openSearchClient);
+
+		Config config = new Config(Lists.newArrayList(appName));
+		config.setHits(10);
+		config.setStart(0);
+		config.setSearchFormat(SearchFormat.findByValue(1));
+		//config.setFetchFields(Arrays.asList("title", "description", "id"));
+		searchParams = new SearchParams(config);
+
+		searchParams.setQuery("default:'OpenSearch'");
+		searchParams.setRawQuery("OpenSearch");
+		String chatName = "test_chat";
+		Map<String, String> promptParameters = new HashMap();
+		Chat chat = new Chat(chatName, promptParameters);
+		searchParams.setChat(chat);
+
+		try {
+			searcherClient.executeForServerSentEvents(searchParams, e -> {
+				System.out.println(e.data());
+			});
+		} catch (OpenSearchClientException e) {
+			System.out.println("ErrorMessage=" + e.getMessage());
+		}
+	}
+
+	/**
+	 * 对象流
+	 */
+	@Test
+    public void testExecuteForOpenSearchResultEvents() {
+		String appName = "name";
+        String accesskey = "ak";
+        String secret = "secret";
+        String host = "http://opensearch-test.aliyuncs.com";
+
+		OpenSearch opensearch = new OpenSearch(accesskey, secret, host);
+		opensearch.setHost(host);
+		opensearch.setTimeout(90000);
+		OpenSearchClient openSearchClient = new OpenSearchClient(opensearch);
+		SearcherClient searcherClient = new SearcherClient(openSearchClient);
+
+		Config config = new Config(Lists.newArrayList(appName));
+		config.setHits(10);
+		config.setStart(0);
+		config.setSearchFormat(SearchFormat.findByValue(1));
+		config.setFetchFields(Arrays.asList("title", "description", "id"));
+		searchParams = new SearchParams(config);
+
+		searchParams.setQuery("default:'OpenSearch'");
+		searchParams.setRawQuery("OpenSearch");
+		String chatName = "test_chat";
+		Map<String, String> promptParameters = new HashMap();
+		Chat chat = new Chat(chatName, promptParameters);
+		searchParams.setChat(chat);
+
+        try {
+			searcherClient.executeForOpenSearchResultEvents(searchParams, e -> {
+				if ( e.data().getTraceInfo() != null) {
+					System.out.println("RequestID=" + e.data().getTraceInfo().getRequestId());
+				}
+
+				if (!StringUtils.isEmpty(e.data().getResult())) {
+					System.out.println("result=" + e.data().getResult());
+				}
+
+				if (!StringUtils.isEmpty(e.data().getChat())) {
+					System.out.println("chat=" + e.data().getChat());
+				}
+			});
+		} catch (OpenSearchException e) {
+			System.out.println("RequestID=" + e.getRequestId());
+			System.out.println("ErrorCode=" + e.getCode());
+			System.out.println("ErrorMessage=" + e.getMessage());
+		} catch (OpenSearchClientException e) {
+			System.out.println("ErrorMessage=" + e.getMessage());
+		}
+	}
+
+	// llm 对象流
+	@Test
+    public void testCallForOpenSearchResultEvents() {
+		String appName = "name";
+        String accesskey = "ak";
+        String secret = "secret";
+        String host = "http://opensearch-test.aliyuncs.com";
+		String path = "/apps/" + appName + "/actions/knowledge-search";
+
+		OpenSearch openSearch = new OpenSearch();
+		openSearch.setHost(host);
+		openSearch.setAccessKey(accesskey);
+		openSearch.setSecret(secret);
+		//openSearch.setBearerToken("OS-49ycmbrps632r774");
+
+		openSearch.setTimeout(62000);
+
+		OpenSearchClient openSearchClient = new OpenSearchClient(openSearch);
+
+		Map<String, String> params = new HashMap<String, String>() {{
+			put("_POST_BODY", "{\"options\":{\"chat\":{\"stream\":true},\"retrieve\":{\"filter\":\"\"}},\"question\":{\"text\":\"根据对各种类型典型站点的调研\",\"type\":\"TEXT\"}}");
+		}};
+
+ 		// 对象流
+		try {
+			openSearchClient.callForOpenSearchResultEvents(path, params, "POST", e -> {
+				//System.out.println("RequestID=" + e.data().getTraceInfo().getRequestId());
+				System.out.println(e.data().getResult());
+			});
+		} catch (OpenSearchException e) {
+			System.out.println("RequestID=" + e.getRequestId());
+			System.out.println("ErrorCode=" + e.getCode());
+			System.out.println("ErrorMessage=" + e.getMessage());
+		} catch (OpenSearchClientException e) {
+			System.out.println("ErrorMessage=" + e.getMessage());
+		}
+	}
+
+	// llm 数据流
+	@Test
+    public void testCallForHttpResponse() {
+		String appName = "name";
+        String accesskey = "ak";
+        String secret = "secret";
+        String host = "http://opensearch-test.aliyuncs.com";
+		String path = "/apps/" + appName + "/actions/knowledge-search";
+
+		OpenSearch openSearch = new OpenSearch();
+		openSearch.setHost(host);
+		openSearch.setAccessKey(accesskey);
+		openSearch.setSecret(secret);
+		//openSearch.setBearerToken("OS-49ycmbrps632r774");
+
+		openSearch.setTimeout(62000);
+
+		OpenSearchClient openSearchClient = new OpenSearchClient(openSearch);
+
+		Map<String, String> params = new HashMap<String, String>() {{
+			put("_POST_BODY", "{\"options\":{\"chat\":{\"stream\":true},\"retrieve\":{\"filter\":\"\"}},\"question\":{\"text\":\"根据对各种类型典型站点的调研\",\"type\":\"TEXT\"}}");
+		}};
+
+		try {
+			HttpResponse httpResponse = openSearchClient.callForHttpResponse(path, params, "POST");
+			InputStream responseBodyStream = httpResponse.getEntity()
+					.getContent();
+			BufferedReader br = new BufferedReader(new InputStreamReader(responseBodyStream, StandardCharsets.UTF_8));
+			String line;
+			while ((line = br.readLine()) != null) {
+				System.out.println(line);
+			}
+
+			br.close();
+
+			// 请求成功
+			openSearchClient.getHttpClientManager().getClientTracer().success(httpResponse, "");
+		} catch (OpenSearchClientException e) {
+			System.out.println("ErrorMessage=" + e.getMessage());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	// llm sse
+	@Test
+    public void testCallForServerSentEvents() {
+		String appName = "name";
+        String accesskey = "ak";
+        String secret = "secret";
+        String host = "http://opensearch-test.aliyuncs.com";
+		String path = "/apps/" + appName + "/actions/knowledge-search";
+
+		OpenSearch openSearch = new OpenSearch();
+		openSearch.setHost(host);
+		openSearch.setAccessKey(accesskey);
+		openSearch.setSecret(secret);
+		openSearch.setTimeout(62000);
+
+		OpenSearchClient openSearchClient = new OpenSearchClient(openSearch);
+
+		Map<String, String> params = new HashMap<String, String>() {{
+			put("_POST_BODY", "{\"options\":{\"chat\":{\"stream\":true},\"retrieve\":{\"filter\":\"\"}},\"question\":{\"text\":\"根据对各种类型典型站点的调研\",\"type\":\"TEXT\"}}");
+		}};
+
+		try {
+			openSearchClient.callForServerSentEvents(path, params, "POST", e -> {
+			   System.out.println(e.data());
+			});
+		} catch (OpenSearchClientException e) {
+			System.out.println("ErrorMessage=" + e.getMessage());
+		}
+	}
+
 }
