@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.aliyun.opensearch</groupId>
     <artifactId>aliyun-sdk-opensearch</artifactId>
-    <version>6.2.0</version>
+    <version>6.2.1</version>
     <packaging>jar</packaging>
     <name>Aliyun OPENSEARCH SDK for Java</name>
     <url>http://www.aliyun.com</url>
@@ -55,6 +55,17 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.8.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                    <autoPublish>true</autoPublish>
+                    <waitUntil>published</waitUntil>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -219,13 +230,18 @@
     <distributionManagement>
         <snapshotRepository>
             <id>sonatype-nexus-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
         </snapshotRepository>
         <repository>
             <id>sonatype-nexus-staging</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <url>https://central.sonatype.com</url>
         </repository>
     </distributionManagement>
+    <scm>
+        <connection>scm:git:git//github.com/aliyun/alibabacloud-opensearch-sdk.git</connection>
+        <developerConnection>scm:gitgit@github.com:aliyun/alibabacloud-opensearch-sdk.git</developerConnection>
+        <url>https://github.com/aliyun/alibabacloud-opensearch-sdk</url>
+    </scm>
     <dependencies>
 
         <!-- explicit dependency: 可能与用户依赖的组件版本冲突 -->
@@ -251,7 +267,7 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20131018</version>
+            <version>20250517</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
