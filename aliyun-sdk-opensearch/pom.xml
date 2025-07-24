@@ -25,6 +25,13 @@
             <distribution/>
         </license>
     </licenses>
+    <developers>
+        <developer>
+            <id>aliyunproducts</id>
+            <name>Aliyun OpenSearch SDK</name>
+            <email>liuyankai.lyk@alibaba-inc.com</email>
+        </developer>
+    </developers>
     <build>
         <plugins>
             <plugin>
