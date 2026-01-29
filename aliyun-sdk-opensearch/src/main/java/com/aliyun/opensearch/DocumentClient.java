@@ -62,6 +62,17 @@ public class DocumentClient implements DocumentService.Iface {
   }
 
   /**
+   * 更新插入文档，如果该主键对应文档已经存在则执行update，否则执行add。
+   *
+   * 标准版不支持upsert
+   *
+   * @param fields 字段名和字段值的map
+   */
+  public void upsert(Map<String, Object> fields) {
+	pushOneDoc(fields, Command.UPSERT);
+  }
+
+  /**
    * 删除文档
    *
    * 设置需要删除的属性名称和属性值，用于生成符合文档格式的数据，所有更新结束之后需要调用push(String tableName)方法
